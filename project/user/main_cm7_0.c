@@ -69,7 +69,7 @@ int main(void)
     
 //    uint8 step = 0;
 //    uint8 time = 0;
-    // 此处编写用户代码 例如外设初始化代码等
+    // 此处编写用户代码 例如外设初始化代码等     测试git
     
     while(true)
     {
