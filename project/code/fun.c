@@ -297,12 +297,12 @@ void VOFA_ParameterSent(uart_index_enum uart_n)
     SendValue[1].floatValue = (float)hCtrl.Yaw.ExpectOmega_Exp;
     SendValue[2].floatValue = (float)IMUData.gz;
     SendValue[3].floatValue = (float)gnss.latitude;
-    SendValue[4].floatValue = (float)IMUData.gzOffset;
-    SendValue[5].floatValue = (float)Expect_Angle;
-    SendValue[6].floatValue = (float)IMUData.sum_yaw_mahony;
-    SendValue[7].floatValue = (float)Expect_Angle;
-    SendValue[8].floatValue = (float)IMUData.ax;
-    SendValue[9].floatValue = (float)INSData.v_y;
+    SendValue[4].floatValue = (float)IMUData.ax;
+    SendValue[5].floatValue = (float)IMUData.ay;
+    SendValue[6].floatValue = (float)IMUData.az;
+    SendValue[7].floatValue = (float)IMUData.gx;
+    SendValue[8].floatValue = (float)IMUData.gy;
+    SendValue[9].floatValue = (float)IMUData.gz;
     SendValue[10].floatValue = (float)INSData.Position_y;
     SendValue[11].floatValue = (float)INSData.Position_x;
 

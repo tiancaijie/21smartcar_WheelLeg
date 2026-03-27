@@ -225,8 +225,8 @@ void icm20602_data_trans(void)
     IMUData.gz_RowFrame = Deg2Rad(icm20602_gyro_transition(icm20602_gyro_z));
 
     //转化为正确坐标系
-        IMUData.ax = - IMUData.ay_RowFrame;
-        IMUData.ay = - IMUData.ax_RowFrame;
+        IMUData.ax = - IMUData.ax_RowFrame;
+        IMUData.ay = - IMUData.ay_RowFrame;
         IMUData.az = - IMUData.az_RowFrame;
 
         IMUData.gx = - IMUData.gy_RowFrame;
