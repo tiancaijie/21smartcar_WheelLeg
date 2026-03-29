@@ -66,7 +66,7 @@ int main(void)
     interrupt_set_priority(CPUIntIdx2_IRQn, 1); 
     interrupt_global_enable (0);
     
-    
+    Get_Point();
 //    uint8 step = 0;
 //    uint8 time = 0;
     // 此处编写用户代码 例如外设初始化代码等   

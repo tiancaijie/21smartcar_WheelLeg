@@ -317,7 +317,7 @@ void PitchAngleCtrl(void)
 
 void YawOmegaCtrl(void)
 {
-    hCtrl.Yaw.Output = -PID_calc(&PID_YawOmega,hCtrl.Yaw.ExpectOmega_Exp,IMUData.gz);
+    hCtrl.Yaw.Output = PID_calc(&PID_YawOmega,hCtrl.Yaw.ExpectOmega_Exp,IMUData.gz);
 }
 
 void YawAngleCtrl(void)

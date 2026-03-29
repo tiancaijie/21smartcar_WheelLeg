@@ -295,14 +295,14 @@ void VOFA_ParameterSent(uart_index_enum uart_n)
 
     SendValue[0].floatValue = (float)hCtrl.Yaw.Output;
     SendValue[1].floatValue = (float)hCtrl.Yaw.ExpectOmega_Exp;
-    SendValue[2].floatValue = (float)IMUData.gz;
-    SendValue[3].floatValue = (float)gnss.latitude;
-    SendValue[4].floatValue = (float)IMUData.ax;
-    SendValue[5].floatValue = (float)IMUData.ay;
-    SendValue[6].floatValue = (float)IMUData.az;
-    SendValue[7].floatValue = (float)IMUData.gx;
-    SendValue[8].floatValue = (float)IMUData.gy;
-    SendValue[9].floatValue = (float)IMUData.gz;
+    SendValue[2].floatValue = (float)IMUData.yaw_mahony;
+    SendValue[3].floatValue = (float)IMUData.pitch_mahony;
+    SendValue[4].floatValue = (float)IMUData.roll_mahony;
+    SendValue[5].floatValue = (float)IMUData.ay_RowFrame;
+    SendValue[6].floatValue = (float)IMUData.az_RowFrame;
+    SendValue[7].floatValue = (float)IMUData.gx_RowFrame;
+    SendValue[8].floatValue = (float)IMUData.gy_RowFrame;
+    SendValue[9].floatValue = (float)IMUData.gz_RowFrame;
     SendValue[10].floatValue = (float)INSData.Position_y;
     SendValue[11].floatValue = (float)INSData.Position_x;
 

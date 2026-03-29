@@ -485,34 +485,59 @@ void Oled_Input(void)
     Hyperparameter_Init();
 }
 
-//void Get_Point(void)
-//{
-//    unsigned char SectorNum = 0;    //锟斤拷始锟斤拷锟斤拷锟斤拷
-//    int Temp = 0;
-//    int input = 0;
-//    uint8 notation;
-//    
-//    Oled_Model_Choose = 0;
-//    CH455_Write();
-//    OLED_CLS();
-//    
-//    OLED_ShowStr(0,0,"1 Sub",2);
-//    OLED_ShowStr(0,2,"2 RUN",2);
-//    OLED_ShowStr(0,4,"3 EMP",2);
-//    OLED_ShowStr(0,6,"4 Bal",2);
-//    OLED_ShowStr(85,0,"5 Ctrl",2);
-//    OLED_ShowStr(85,2,"6 ANG",2);
-//    OLED_ShowStr(85,4,"7 LEN",2);
-//    
-//    Oled_Model_Choose = KeyboardInput(88, 6);
-//    OLED_CLS();
-//    
-//    SectorNum = Oled_Model_Choose;//锟斤拷锟斤拷锟斤拷
-//    
-//    switch (Oled_Model_Choose)
-//    {
-//        case 1 :
-//        {
+void Get_Point(void)
+{
+    unsigned char SectorNum = 0;    //锟斤拷始锟斤拷锟斤拷锟斤拷
+    int Temp = 0;
+    int input = 0;
+    uint8 notation;
+    
+    Oled_Model_Choose = 0;
+    CH455_Write();
+    OLED_CLS();
+    
+    OLED_ShowStr(0,0,"1 Run",2);
+    OLED_ShowStr(0,2,"2 Pot",2);
+    OLED_ShowStr(0,4,"3 ",2);
+    
+    Oled_Model_Choose = KeyboardInput(88, 6);
+    OLED_CLS();
+    
+    SectorNum = Oled_Model_Choose;//锟斤拷锟斤拷锟斤拷
+    
+    switch (Oled_Model_Choose)
+    {
+        case 1 :
+        {
+            break;
+        }
+        case 2 :
+        {
+            OLED_ShowStr(0,0,"pot number",2);
+//            OLED_Show_float(First_X,2,Navigation.current.X, 4, 1);
+//            OLED_Show_float(First_X,4,Navigation.current.Y, 4, 1);
+//            OLED_Show_float(First_X,6,Navigation.current.Azimuth, 4, 1);
+            
+            input = KeyboardInput(88, 6);
+            
+            for(int i = 1; i <= input; i++)
+            {
+                OLED_CLS();
+                OLED_Numbers(First_X,0,Navigation.MarkPot.Point_Order);
+                OLED_ShowStr(0,2,"wait enter",2);
+                KeyboardInput(88, 6);
+                Navigation.MarkPot.Point_Order++;
+                OLED_CLS();
+            }
+            
+            break;
+        }
+        case 3:
+        {
+            break;
+        }
+    }
+}
             
 
 /******************************************************

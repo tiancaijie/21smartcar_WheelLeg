@@ -42,6 +42,7 @@ extern void Set_flash_read(void);
 extern void Hyperparameter_Init(void);
 extern void Oled_Send(void);
 extern void element_flash_read(void);
+extern void Get_Point(void);
 
 void Balance_flash_read(void);
 void Control_flash_read(void);

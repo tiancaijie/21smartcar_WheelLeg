@@ -156,18 +156,21 @@ void INS_Calcu(void)
 {
 //    double a,b;0.927500  0.923599 0.923050 0.927211
     static char ms100 = 0;
-    
-    ms100++;
+
+    ms100++;   
     // 编码器读值转换位米
-    INSData.Position += ((double)motor_value.receive_left_speed_data - (double)motor_value.receive_right_speed_data) * 6.0 / (2000000 * 0.92534);
-    INSData.Position += (double)ay_last * 4 / 2000000;
+    INSData.Position += ((double)motor_value.receive_left_speed_data - (double)motor_value.receive_right_speed_data) * 0.000001 *4 / 1.1041067;
+
+    //INSData.Position2 = (INSData.Position + 19 * INSData.Position_last) / 20 ;
     if(ms100 == 49)
     {
-        INSData.v_x = INSData.Position * (cos(IMUData.sum_yaw_mahony));// 前方是X轴
-        INSData.v_y = INSData.Position * (sin(IMUData.sum_yaw_mahony));// 左边是Y轴
+
+        INSData.v_x = INSData.Position * (cos(IMUData.sum_yaw_mahony*PI/180));// 前方是X轴
+        INSData.v_y = INSData.Position * (sin(IMUData.sum_yaw_mahony*PI/180));// 左边是Y轴
         INSData.Position_x += INSData.v_x;
         INSData.Position_y += INSData.v_y;
         // 惯导计数归零
+//        INSData.Position_last = INSData.Position ;
         INSData.Position = 0;
         ms100 = 0;
     }
