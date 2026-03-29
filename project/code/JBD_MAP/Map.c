@@ -165,8 +165,8 @@ void INS_Calcu(void)
     if(ms100 == 49)
     {
 
-        INSData.v_x = INSData.Position * (cos(IMUData.sum_yaw_mahony*PI/180));// 前方是X轴
-        INSData.v_y = INSData.Position * (sin(IMUData.sum_yaw_mahony*PI/180));// 左边是Y轴
+        INSData.v_y = INSData.Position * (cos(IMUData.sum_yaw_mahony*PI/180));// 前方是y轴
+        INSData.v_x = INSData.Position * (sin(IMUData.sum_yaw_mahony*PI/180));// 右边是x轴
         INSData.Position_x += INSData.v_x;
         INSData.Position_y += INSData.v_y;
         // 惯导计数归零

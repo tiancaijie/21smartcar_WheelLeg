@@ -293,16 +293,16 @@ void VOFA_ParameterSent(uart_index_enum uart_n)
     uint8 i = 0;
     uint8 end[4] = {0x00, 0x00, 0x80, 0x7f};
 
-    SendValue[0].floatValue = (float)hCtrl.Yaw.Output;
-    SendValue[1].floatValue = (float)hCtrl.Yaw.ExpectOmega_Exp;
-    SendValue[2].floatValue = (float)IMUData.yaw_mahony;
-    SendValue[3].floatValue = (float)IMUData.pitch_mahony;
-    SendValue[4].floatValue = (float)IMUData.roll_mahony;
-    SendValue[5].floatValue = (float)IMUData.ay_RowFrame;
-    SendValue[6].floatValue = (float)IMUData.az_RowFrame;
-    SendValue[7].floatValue = (float)IMUData.gx_RowFrame;
-    SendValue[8].floatValue = (float)IMUData.gy_RowFrame;
-    SendValue[9].floatValue = (float)IMUData.gz_RowFrame;
+    SendValue[0].floatValue = (float)IMUData.sum_yaw_mahony;
+    SendValue[1].floatValue = (float)Expect_Angle;
+    SendValue[2].floatValue = (float)IMUData.pitch_mahony;
+    SendValue[3].floatValue = (float)hCtrl.Pitch.ExpectOmega;
+    SendValue[4].floatValue = (float)IMUData.gx;
+    SendValue[5].floatValue = (float)motor_value.receive_left_speed_data;
+    SendValue[6].floatValue = (float)motor_value.receive_right_speed_data;
+    SendValue[7].floatValue = (float)hCtrl.Pitch.LegOutput;
+    SendValue[8].floatValue = (float)hCtrl.Pitch.ExpectSpeed_Act;
+    SendValue[9].floatValue = (float)hCtrl.Pitch.Output;
     SendValue[10].floatValue = (float)INSData.Position_y;
     SendValue[11].floatValue = (float)INSData.Position_x;
 

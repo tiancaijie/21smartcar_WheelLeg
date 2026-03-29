@@ -555,7 +555,7 @@ void imu963_data_trans(void)
 
     IMUData.gx = IMUData.gy_RowFrame;
     IMUData.gy = -IMUData.gx_RowFrame;
-    IMUData.gz = -IMUData.gz_RowFrame;
+    IMUData.gz = IMUData.gz_RowFrame;
 
 //ºı»•¡„∆Ø
     IMUData.gx -= IMUData.gxOffset;

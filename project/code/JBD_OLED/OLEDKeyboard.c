@@ -39,6 +39,8 @@ uint32 Control_SET[8];
 uint32 Set_Angle[8];
 uint32 Set_Length[8];
 uint32 Set_Sign[8];
+double Set_X[20] = {0};
+double Set_Y[20] = {0};
 uint32 SubSet_OKb;//跑车模式：科一、科二、科三
 float GPS_DisSET[8];
 float GPS_AngSET[8];
@@ -509,6 +511,7 @@ void Get_Point(void)
     {
         case 1 :
         {
+            SubSet_OKb = 1;
             break;
         }
         case 2 :
@@ -527,8 +530,28 @@ void Get_Point(void)
                 OLED_ShowStr(0,2,"wait enter",2);
                 KeyboardInput(88, 6);
                 Navigation.MarkPot.Point_Order++;
-                OLED_CLS();
+                Set_X[i] = INSData.Position_x;
+                Set_Y[i] = INSData.Position_y;
+                if(i > 1)
+                {                
+                    Set_Length[i - 2] = sqrt(pow(Set_X[i - 1] - Set_X[i], 2) + pow(Set_Y[i - 1] - Set_Y[i], 2)) * 100;
+                    Set_Sign  [i - 2] = ((180/PI)*atan2(Set_X[i] - Set_X[i - 1], Set_Y[i] - Set_Y[i - 1]) > 0 ? 0 : 1);
+                    Set_Angle [i - 2] = (180/PI)*atan2(Set_X[i] - Set_X[i - 1], Set_Y[i] - Set_Y[i - 1]);                  
+                }
             }
+            
+            Temp = 40;
+            for(int i = 0; i < 8; i++)
+            {
+                flash_write_page(0, Temp++, &Set_Angle[i], 1);
+            }
+            for(int i = 0; i < 8; i++)
+            {
+                flash_write_page(0, Temp++, &Set_Length[i], 1);
+                Set_Length[i] *= 0.01;
+            }
+
+            OLED_CLS();
             
             break;
         }
@@ -642,10 +665,10 @@ void Set_flash_read(void)
     {
       flash_read_page(0, case_Temp++, &Set_Angle[i], 1);
     }
-          for(int i = 0; i < 8; i++)
+    for(int i = 0; i < 8; i++)
     {
       flash_read_page(0, case_Temp++, &Set_Length[i], 1);
-      Set_Length[i] *= 0.1;
+      Set_Length[i] *= 0.01;
     }
     
     case_Temp = 16;
