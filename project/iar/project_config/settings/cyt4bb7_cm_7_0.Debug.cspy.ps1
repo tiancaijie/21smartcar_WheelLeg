@@ -23,9 +23,9 @@
 
 if ($debugfile -eq "")
 {
-& "D:\IAR\IAR_9.40\common\bin\cspybat" -f "D:\IAR\SeekFree\CYT4BB7_Library-master-V2.0\Seekfree_CYT4BB_Opensource_Library\project\iar\project_config\settings\cyt4bb7_cm_7_0.Debug.general.xcl" --backend -f "D:\IAR\SeekFree\CYT4BB7_Library-master-V2.0\Seekfree_CYT4BB_Opensource_Library\project\iar\project_config\settings\cyt4bb7_cm_7_0.Debug.driver.xcl" 
+& "D:\IAR\IAR\common\bin\cspybat" -f "C:\Users\xsj20\21smartcar_WheelLeg\project\iar\project_config\settings\cyt4bb7_cm_7_0.Debug.general.xcl" --backend -f "C:\Users\xsj20\21smartcar_WheelLeg\project\iar\project_config\settings\cyt4bb7_cm_7_0.Debug.driver.xcl" 
 }
 else
 {
-& "D:\IAR\IAR_9.40\common\bin\cspybat" -f "D:\IAR\SeekFree\CYT4BB7_Library-master-V2.0\Seekfree_CYT4BB_Opensource_Library\project\iar\project_config\settings\cyt4bb7_cm_7_0.Debug.general.xcl" --debug_file=$debugfile --backend -f "D:\IAR\SeekFree\CYT4BB7_Library-master-V2.0\Seekfree_CYT4BB_Opensource_Library\project\iar\project_config\settings\cyt4bb7_cm_7_0.Debug.driver.xcl" 
+& "D:\IAR\IAR\common\bin\cspybat" -f "C:\Users\xsj20\21smartcar_WheelLeg\project\iar\project_config\settings\cyt4bb7_cm_7_0.Debug.general.xcl" --debug_file=$debugfile --backend -f "C:\Users\xsj20\21smartcar_WheelLeg\project\iar\project_config\settings\cyt4bb7_cm_7_0.Debug.driver.xcl" 
 }

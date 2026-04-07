@@ -43,4 +43,6 @@ void Init_All(void)
     flash_init();
     OLED_Init();
     Oled_Input();
+    /* ----枪控初始化---- */
+    uart_receiver_init();
 }

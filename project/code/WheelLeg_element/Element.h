@@ -38,6 +38,8 @@ extern float Row_Mid;
 extern float Single_Angle;
 extern float Expect_Angle;
 extern uint8 Bridge1_Start,Bridge1_End,Bridge2_Start,Bridge2_End,Bridge_Type;
+extern uint8 Run_GPS ;
+extern uint8 Run_INS ;
 void Single_BridgeJudgement(void);
 void Find_SingleBridge(void);
 void Single_BridgeCount(void);

@@ -78,12 +78,6 @@ int main(void)
 //        Reset_StartPot();
         VOFA_ParameterSent(UART_4);
         
-
-        if(hCtrl.Yaw.BalancePoint == 0 && Switch_On)
-        {
-            hCtrl.Yaw.BalancePoint = IMUData.yaw_mahony;
-        }
-        
         Run_Start();
         
           

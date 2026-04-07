@@ -63,6 +63,8 @@ extern float L_Height;
 extern float R_Height;
 extern Bint16_Union Left_Speed;
 extern Bint16_Union Right_Speed;
+extern double Start_X;
+extern double Start_Y;
 #endif
 
 

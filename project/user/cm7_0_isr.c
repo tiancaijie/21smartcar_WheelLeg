@@ -61,6 +61,8 @@ double Start_Longitude = 0;
 uint8 gps_state = 0;
 uint8 dot_count = 0;
 uint8 uart1_rx_buff[40]={0};
+double Start_X = 0;
+double Start_Y = 0;
 FrameHead_Type Find_Head = Find_Off;
 // **************************** PIT中断函数 ****************************
 void pit0_ch0_isr()                     // 定时器通道 0 周期中断服务函数      
@@ -77,6 +79,11 @@ void pit0_ch0_isr()                     // 定时器通道 0 周期中断服务函数
     Angle_cal();
     INS_Calcu();
     
+    if(hCtrl.Yaw.BalancePoint == 0 && Switch_On)
+    {
+        hCtrl.Yaw.BalancePoint = IMUData.yaw_mahony;
+    }
+
     if (ms20 >= 10)           //20ms
     {
         Pitch_LegCtrl();      
@@ -100,6 +107,8 @@ void pit0_ch0_isr()                     // 定时器通道 0 周期中断服务函数
     Speed_Output();
     PWM_Output(&L_leg,&R_leg);
     SAFE_PROTECT();
+    
+
 }
 
 void pit0_ch1_isr()                     // 定时器通道 1 周期中断服务函数      
@@ -432,9 +441,13 @@ void uart1_isr (void)
 
 void uart2_isr (void)
 {
+ 
+  
     if(Cy_SCB_GetRxInterruptMask(get_scb_module(UART_2)) & CY_SCB_UART_RX_NOT_EMPTY)            // 串口2接收中断
     {
         Cy_SCB_ClearRxInterrupt(get_scb_module(UART_2), CY_SCB_UART_RX_NOT_EMPTY);              // 清除接收中断标志位
+        
+       
         gnss_uart_callback();
         gnss_data_parse();                              //定位模块数据解析
 
@@ -452,10 +465,24 @@ void uart2_isr (void)
 //        gnss_dot[0][10] = gnss_dot[0][10] / 9;
 //        gnss_dot[1][10] = gnss_dot[1][10] / 9;
         gps_state = 1 - gps_state;
-
-        Distance = get_two_points_distance(Start_Latitude, Start_Longitude, gnss.latitude, gnss.longitude) + INSData.Distance;        //偏离起点距离
-        Azimuth  = get_two_points_azimuth(Start_Latitude, Start_Longitude, gnss_dot[0][10], gnss_dot[1][10]);         //偏离起点角度 
-        CarDirection = gnss.direction;
+//
+//        Distance = get_two_points_distance(Start_Latitude, Start_Longitude, gnss.latitude, gnss.longitude) + INSData.Distance;        //偏离起点距离
+//        Azimuth  = get_two_points_azimuth(Start_Latitude, Start_Longitude, gnss_dot[0][10], gnss_dot[1][10]);         //偏离起点角度 
+//        CarDirection = gnss.direction;
+        
+        
+        if(Run_GPS)
+        {
+            Distance = get_two_points_distance(Start_Latitude, Start_Longitude, gnss.latitude, gnss.longitude) + INSData.Distance;        //偏离起点距离
+            Azimuth  = get_two_points_azimuth(Start_Latitude, Start_Longitude, gnss_dot[0][10], gnss_dot[1][10]);         //偏离起点角度 
+            CarDirection = gnss.direction;
+        }
+        if(Run_INS)
+        {
+            Distance = sqrt(pow(Start_X - INSData.Position_x, 2) + pow(Start_Y - INSData.Position_y, 2));
+        }
+        
+        
     }
     else if(Cy_SCB_GetTxInterruptMask(get_scb_module(UART_2)) & CY_SCB_UART_TX_DONE)            // 串口2发送中断
     {
@@ -472,7 +499,7 @@ void uart3_isr (void)
     {
         Cy_SCB_ClearRxInterrupt(get_scb_module(UART_3), CY_SCB_UART_RX_NOT_EMPTY);              // 清除接收中断标志位
 
-        
+        uart_receiver_handler();                                                                // 串口接收机回调函数
         
         
     }
@@ -493,7 +520,6 @@ void uart4_isr (void)
         Cy_SCB_ClearRxInterrupt(get_scb_module(UART_4), CY_SCB_UART_RX_NOT_EMPTY);              // 清除接收中断标志位
 
         
-        uart_receiver_handler();                                                                // 串口接收机回调函数
         
         
     }

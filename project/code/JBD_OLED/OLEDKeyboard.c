@@ -483,16 +483,18 @@ void Oled_Input(void)
     Set_flash_read();
     Run_flash_read();
     Balance_flash_read();
+    PID_YawAngle.kp = 0.0 ;
     Control_flash_read();
     Hyperparameter_Init();
 }
 
 void Get_Point(void)
 {
+
     unsigned char SectorNum = 0;    //锟斤拷始锟斤拷锟斤拷锟斤拷
     int Temp = 0;
     int input = 0;
-    uint8 notation;
+    uint32 notation;
     
     Oled_Model_Choose = 0;
     CH455_Write();
@@ -511,7 +513,31 @@ void Get_Point(void)
     {
         case 1 :
         {
-            SubSet_OKb = 1;
+            flash_read_page_to_buffer(0, 95, 1);
+            flash_write_page_from_buffer(0, Standby_Buffer, 1);
+            flash_read_page(0, Standby_Buffer, &notation, 1);
+            
+            OLED_ShowStr(0,0,"mode",2);
+            OLED_ShowStr(0,2,"GPS  0",2);
+            OLED_ShowStr(0,4,"INS  1",2);
+            OLED_Numbers(50,0,notation);
+            input = KeyboardInput(88, 6);
+            
+            if(input == 0)
+            {
+                Run_GPS = 1;
+                Run_INS = 0;
+                notation = 0;
+                flash_write_page(0, 95, &notation, 1);
+            }
+            else
+            {
+                Run_GPS = 0;
+                Run_INS = 1;
+                notation = 1;
+                flash_write_page(0, 95, &notation, 1);
+            }
+            OLED_CLS();
             break;
         }
         case 2 :
@@ -535,11 +561,19 @@ void Get_Point(void)
                 if(i > 1)
                 {                
                     Set_Length[i - 2] = sqrt(pow(Set_X[i - 1] - Set_X[i], 2) + pow(Set_Y[i - 1] - Set_Y[i], 2)) * 100;
-                    Set_Sign  [i - 2] = ((180/PI)*atan2(Set_X[i] - Set_X[i - 1], Set_Y[i] - Set_Y[i - 1]) > 0 ? 0 : 1);
-                    Set_Angle [i - 2] = (180/PI)*atan2(Set_X[i] - Set_X[i - 1], Set_Y[i] - Set_Y[i - 1]);                  
+                   Set_Sign  [i - 2] = (180/PI)*atan2(Set_X[i] - Set_X[i - 1], Set_Y[i] - Set_Y[i - 1]) > 0 ? 1 : 0;
+                    Set_Angle [i - 2] = fabs((180/PI)*atan2(Set_X[i] - Set_X[i - 1], Set_Y[i] - Set_Y[i - 1])) ;
                 }
+                
+                 //   Set_Sign  [i - 1] = IMUData.sum_yaw_mahony > 0 ? 1 : 0;
+                    //Set_Angle [i - 1] = fabs(IMUData.sum_yaw_mahony) ; //(180/PI)*atan2(Set_X[i] - Set_X[i - 1], Set_Y[i] - Set_Y[i - 1]); 
+
             }
-            
+            Temp = 16;
+            for(int i = 0; i < 8; i++)
+            {
+                flash_write_page(0, Temp++, &Set_Sign[i], 1);
+            }
             Temp = 40;
             for(int i = 0; i < 8; i++)
             {
@@ -552,14 +586,16 @@ void Get_Point(void)
             }
 
             OLED_CLS();
-            
+            Balance_flash_read();
             break;
         }
         case 3:
         {
+              Balance_flash_read();
             break;
         }
     }
+    Balance_flash_read();
 }
             
 

@@ -23,6 +23,8 @@ extern uint32 Threshold;
 extern uint32 Set_Angle[8];
 extern uint32 Set_Length[8];
 extern uint32 Set_Sign[8];
+extern double Set_X[20] ;
+extern double Set_Y[20] ;
 extern int Left_Target_Speed[2];
 extern int Right_Target_Speed[2];
 extern int Left_Real_Speed;

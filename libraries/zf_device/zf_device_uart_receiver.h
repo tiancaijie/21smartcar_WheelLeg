@@ -46,9 +46,9 @@
 
 #include "zf_common_typedef.h"
 
-#define UART_RECEVIER_UART_INDEX            UART_4              // 定义串口接收机使用的串口
-#define UART_RECEVIER_TX_PIN                UART4_TX_P14_1      // 遥控器接收机没有这个引脚，仅用于串口初始化时占位使用
-#define UART_RECEVIER_RX_PIN                UART4_RX_P14_0      // 串口接收机的TX引脚 连接单片机的RX引脚
+#define UART_RECEVIER_UART_INDEX            UART_3              // 定义串口接收机使用的串口
+#define UART_RECEVIER_TX_PIN                UART3_TX_P17_2      // 遥控器接收机没有这个引脚，仅用于串口初始化时占位使用
+#define UART_RECEVIER_RX_PIN                UART3_RX_P17_1      // 串口接收机的TX引脚 连接单片机的RX引脚
 #define UART_RECEVIER_COUNTER               (TC_TIME2_CH2)      // 定义遥控器接受间隔计数器通道
 #define SBUS_UART_BAUDRATE                  (100000)            // 指定 SBUS 串口所使用的的串口波特率 (用户不可修改)
 #define UART_RECEVIER_CHANNEL_NUM           ( 6 )               // 定义遥控器通道数量 (用户不可修改)
@@ -67,6 +67,8 @@ typedef struct
 }uart_receiver_struct;
 
 extern uart_receiver_struct uart_receiver;                      // 串口接收机通道数据与状态
+
+extern uint8   uart_receiver_data[REV_DATA_LEN];
 
 void uart_receiver_init(void);
 

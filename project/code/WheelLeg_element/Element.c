@@ -19,6 +19,10 @@ uint8 Last_GPS_State = 0;
 uint8 State_get_count = 0;
 int Single_Bridge = 0;
 int BridgeUP_Flag = 0,BridgeDOWN_Flag = 0;
+
+uint8 Run_GPS = 0;
+uint8 Run_INS = 1;
+
 void Single_BridgeCount(void)
 {
     if (Single_Bridge == 1 && Bridge_Count > 0 && BridgeDOWN_Flag == 0 && BridgeUP_Flag == 0 &&(Stand_Height < 0.06 && (ABS(L_Height - R_Height) >= 0.025) || Stand_Height >= 0.06 && ABS(L_Height - R_Height) >= 0.045))
@@ -126,64 +130,131 @@ void Stand(void)
     }
 }
 
+//void Reset_StartPot(void)
+//{ 
+//    if(Last_GPS_State != gps_state && State_get_count < 5)
+//    {
+//        Last_GPS_State = gps_state;
+//        Start_Latitude += gnss.latitude;
+//        Start_Longitude += gnss.longitude;
+//        State_get_count++;
+//    }
+//    if(State_get_count == 5)
+//    {
+//        Start_Latitude /= 5;
+//        Start_Longitude /= 5;
+//    }
+//    Distance = get_two_points_distance(Start_Latitude, Start_Longitude, gnss.latitude, gnss.longitude);
+//    if(Distance < 1 && State_get_count == 5)
+//    {
+//        State_get_count = 0;
+//        Now_Dot_Flag++;
+//    }
+//    else if(Distance >= 1 && State_get_count == 5)
+//    {
+//        State_get_count = 0;
+//        Start_Latitude = 0;
+//        Start_Longitude = 0;
+//    }
+//}
+
 void Reset_StartPot(void)
 { 
-    if(Last_GPS_State != gps_state && State_get_count < 5)
+    if(Run_GPS)
     {
-        Last_GPS_State = gps_state;
-        Start_Latitude += gnss.latitude;
-        Start_Longitude += gnss.longitude;
-        State_get_count++;
+        if(Last_GPS_State != gps_state && State_get_count < 5)
+        {
+            Last_GPS_State = gps_state;
+            Start_Latitude += gnss.latitude;
+            Start_Longitude += gnss.longitude;
+            State_get_count++;
+        }
+        if(State_get_count == 5)
+        {
+            Start_Latitude /= 5;
+            Start_Longitude /= 5;
+        }
+        Distance = get_two_points_distance(Start_Latitude, Start_Longitude, gnss.latitude, gnss.longitude);
+        if(Distance < 1 && State_get_count == 5)
+        {
+            State_get_count = 0;
+            Now_Dot_Flag++;
+        }
+        else if(Distance >= 1 && State_get_count == 5)
+        {
+            State_get_count = 0;
+            Start_Latitude = 0;
+            Start_Longitude = 0;
+        }
     }
-    if(State_get_count == 5)
+
+    if(Run_INS)
     {
-        Start_Latitude /= 5;
-        Start_Longitude /= 5;
-    }
-    Distance = get_two_points_distance(Start_Latitude, Start_Longitude, gnss.latitude, gnss.longitude);
-    if(Distance < 1 && State_get_count == 5)
-    {
-        State_get_count = 0;
+        Start_X = INSData.Position_x;
+        Start_Y = INSData.Position_y;
         Now_Dot_Flag++;
-    }
-    else if(Distance >= 1 && State_get_count == 5)
-    {
-        State_get_count = 0;
-        Start_Latitude = 0;
-        Start_Longitude = 0;
     }
 }
 
 void Angle_Set(void)
 {
-    static int8 Last_Dot = 0;
-    if(Set_Sign[7] == 2 && Last_Dot != Now_Dot)
+//    static int8 Last_Dot = 0;
+//    if(Set_Sign[7] == 2 && Last_Dot != Now_Dot)
+//    {
+//      Last_Dot = Now_Dot;
+//      Expect_Angle = IMUData.sum_yaw_mahony + 2*360;
+//    }
+    if(Set_Sign[7] == 2)// && ABS(Expect_Angle - IMUData.sum_yaw_mahony) < 0.5)
     {
-      Last_Dot = Now_Dot;
-      Expect_Angle = IMUData.sum_yaw_mahony + 2*360;
-    }
-    else if(Set_Sign[7] == 2 && ABS(Expect_Angle - IMUData.sum_yaw_mahony) < 0.5)
-    {
-      Expect_Angle = IMUData.sum_yaw_mahony + (float)Set_Angle[Now_Dot] * (Set_Sign[Now_Dot] == 0 ? (1):(-1));
+      Expect_Angle = 720 *Now_Dot  + (float)Set_Angle[Now_Dot] * (Set_Sign[Now_Dot] == 0 ? (1):(-1));
       Now_Dot_Flag++;
     }
     else if(Set_Sign[7] != 2)
     {
-      Expect_Angle = IMUData.sum_yaw_mahony + (float)Set_Angle[Now_Dot] * (Set_Sign[Now_Dot] == 0 ? (1):(-1));
+      Expect_Angle = (float)Set_Angle[Now_Dot] * (Set_Sign[Now_Dot] == 0 ? (1):(-1));
       Now_Dot_Flag++;
     }
 }
 
+//void Speed_Set(void)
+//{
+//    if(Distance > Set_Length[Now_Dot])
+//    {
+//      hCtrl.Pitch.ExpectSpeed_Act = 0;
+//      Now_Dot_Flag++;
+//    }
+//    else
+//    {
+//      hCtrl.Pitch.ExpectSpeed_Act = hCtrl.Pitch.ExpectSpeed_Exp;
+//    }
+//}
+
 void Speed_Set(void)
 {
-    if(Distance > Set_Length[Now_Dot])
+    if(Run_GPS)
     {
-      hCtrl.Pitch.ExpectSpeed_Act = 0;
-      Now_Dot_Flag++;
+        if(Distance > Set_Length[Now_Dot])
+        {
+            hCtrl.Pitch.ExpectSpeed_Act = 0;
+            Now_Dot_Flag++;
+        }
+        else
+        {
+            hCtrl.Pitch.ExpectSpeed_Act = hCtrl.Pitch.ExpectSpeed_Exp;
+        }
     }
-    else
+    
+    if(Run_INS)
     {
-      hCtrl.Pitch.ExpectSpeed_Act = hCtrl.Pitch.ExpectSpeed_Exp;
+        if(Distance > Set_Length[Now_Dot])
+        {
+            hCtrl.Pitch.ExpectSpeed_Act = 0;
+            Now_Dot_Flag++;
+        }
+        else
+        {
+            hCtrl.Pitch.ExpectSpeed_Act = hCtrl.Pitch.ExpectSpeed_Exp;
+        }
     }
 }
 
@@ -197,7 +268,7 @@ void Run_Start(void)
     {
       Reset_StartPot();
     }
-    if(Now_Dot_Flag == 2 && ABS(Expect_Angle - IMUData.sum_yaw_mahony) < 0.05)
+    if(Now_Dot_Flag == 2 && ABS(Expect_Angle + IMUData.sum_yaw_mahony) < 0.1)
     {
       Speed_Set();
     }
