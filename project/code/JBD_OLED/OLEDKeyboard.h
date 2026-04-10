@@ -31,6 +31,7 @@ extern int Left_Real_Speed;
 extern int Right_Real_Speed;
 extern float Pos_Error;          // 位置偏差
 extern int Speed_Error;        // 位置环输出差速
+extern uint16 Getpoint_LastFlag;
 
 /***********************************鍑芥暟澹版槑***********************************/
 extern void Oled_Input(void);

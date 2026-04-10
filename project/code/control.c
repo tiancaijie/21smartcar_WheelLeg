@@ -289,6 +289,7 @@ int Slow_Flag = 0;
 int Single_Jump = 0;
 void Pitch_LegCtrl(void)
 {
+    Remote_Conctol();
     float  LegOutput;
     LegOutput = PID_calc(&PID_PitchLeg, -hCtrl.Pitch.ExpectSpeed_Act, (-motor_value.receive_left_speed_data + motor_value.receive_right_speed_data)/2);
     hCtrl.Pitch.LegOutput = (hCtrl.Pitch.LegOutput * 19 + LegOutput * 1) / 20;
@@ -322,6 +323,8 @@ void YawOmegaCtrl(void)
 
 void YawAngleCtrl(void)
 {
+    Remote_Conctol();
+    uart_receiver_data[0] = 0;
     hCtrl.Yaw.ExpectOmega_Exp = PID_calc(&PID_YawAngle,Expect_Angle,-IMUData.sum_yaw_mahony);
 }
 float Swerve_Offset[2] = {0};
@@ -380,4 +383,24 @@ void SAFE_PROTECT(void)
         PID_cleardata(&PID_PitchOmega);
         PID_cleardata(&PID_YawOmega);
     }
+}
+
+void Remote_Conctol (void)
+{
+//    uart_receiver.channel[0] -= 992;
+//    uart_receiver.channel[1] -= 992;
+    if(uart_receiver.channel[3] == 1792)                                               //4通道保护（是否打点）
+    {
+//        if(uart_receiver.channel[0] != 0)
+//        {
+            Expect_Angle += (uart_receiver.channel[0] - 992) * 0.01 ;                    //1通道方向
+       // }
+        hCtrl.Pitch.ExpectSpeed_Act = (uart_receiver.channel[1] - 992) * 1 ;         //2通道油门
+    }
+//    else
+//    {
+//       Angle_Set();                                                          
+//      // Run_flash_read();
+//      // Speed_Set();
+//    }
 }

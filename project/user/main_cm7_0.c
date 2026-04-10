@@ -77,8 +77,12 @@ int main(void)
         Oled_Display();
 //        Reset_StartPot();
         VOFA_ParameterSent(UART_4);
-        
-        Run_Start();
+
+        // 没遥控才用自动判断
+        if(uart_receiver.channel[3] != 1792)
+        {
+            Run_Start();
+        }
         
           
 //        if (Distance < 30 && step == 0)

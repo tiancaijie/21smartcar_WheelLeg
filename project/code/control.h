@@ -10,6 +10,7 @@
    
 #include "pid.h"
 #include "zf_common_headfile.h"
+#include "Element.h"
    
 #define N 3
 extern float IMU_ax_output_a[N];
@@ -180,4 +181,5 @@ void Speed_Output(void);
 void Direction_Ctrl(void);
 void SAFE_PROTECT(void);
 void Swerve_RollOffset(void);
+void Remote_Conctol(void);
 #endif /* CODE_CONTROL_H_ */

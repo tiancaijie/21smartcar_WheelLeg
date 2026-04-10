@@ -260,6 +260,13 @@ void Speed_Set(void)
 
 void Run_Start(void)
 {   
+    if(Run_INS)
+    {
+        float dx = (float)(Start_X - INSData.Position_x);
+        float dy = (float)(Start_Y - INSData.Position_y);
+        Distance = sqrtf(dx * dx + dy * dy);
+    }
+
     if(Now_Dot_Flag == 0)
     {
       Angle_Set();

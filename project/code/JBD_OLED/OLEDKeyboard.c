@@ -45,6 +45,7 @@ uint32 SubSet_OKb;//跑车模式：科一、科二、科三
 float GPS_DisSET[8];
 float GPS_AngSET[8];
 double CoSub_OKb[100];
+uint16 Getpoint_LastFlag = 192;
 unsigned char Oled_Model_Choose = 0;
 /******************************************************
 ** Function: Oled_Input
@@ -483,7 +484,7 @@ void Oled_Input(void)
     Set_flash_read();
     Run_flash_read();
     Balance_flash_read();
-    PID_YawAngle.kp = 0.0 ;
+    //PID_YawAngle.kp = 0.0 ;
     Control_flash_read();
     Hyperparameter_Init();
 }
@@ -543,32 +544,52 @@ void Get_Point(void)
         case 2 :
         {
             OLED_ShowStr(0,0,"pot number",2);
-//            OLED_Show_float(First_X,2,Navigation.current.X, 4, 1);
-//            OLED_Show_float(First_X,4,Navigation.current.Y, 4, 1);
-//            OLED_Show_float(First_X,6,Navigation.current.Azimuth, 4, 1);
+//          OLED_Show_float(First_X,2,Navigation.current.X, 4, 1);
+//          OLED_Show_float(First_X,4,Navigation.current.Y, 4, 1);
+//          OLED_Show_float(First_X,6,Navigation.current.Azimuth, 4, 1);
             
             input = KeyboardInput(88, 6);
-            
-            for(int i = 1; i <= input; i++)
+                   
+            OLED_CLS();
+
+            int i = 1;          
+            Getpoint_LastFlag = uart_receiver.channel[2]; 
+
+            while(i <= input)
             {
-                OLED_CLS();
+                
                 OLED_Numbers(First_X,0,Navigation.MarkPot.Point_Order);
                 OLED_ShowStr(0,2,"wait enter",2);
-                KeyboardInput(88, 6);
-                Navigation.MarkPot.Point_Order++;
+
+                while(1)
+                {
+                    if( (Getpoint_LastFlag == 192 && uart_receiver.channel[2] == 1792) || 
+                        (Getpoint_LastFlag == 1792 && uart_receiver.channel[2] == 192) )
+                    {
+                        Getpoint_LastFlag = uart_receiver.channel[2];
+                        break;
+                    }
+                    for(int i = 0; i < 10 ; i++); // 开关消抖
+                }
+
                 Set_X[i] = INSData.Position_x;
                 Set_Y[i] = INSData.Position_y;
+                
                 if(i > 1)
                 {                
                     Set_Length[i - 2] = sqrt(pow(Set_X[i - 1] - Set_X[i], 2) + pow(Set_Y[i - 1] - Set_Y[i], 2)) * 100;
-                   Set_Sign  [i - 2] = (180/PI)*atan2(Set_X[i] - Set_X[i - 1], Set_Y[i] - Set_Y[i - 1]) > 0 ? 1 : 0;
+                    Set_Sign  [i - 2] = (180/PI)*atan2(Set_X[i] - Set_X[i - 1], Set_Y[i] - Set_Y[i - 1]) > 0 ? 1 : 0;
                     Set_Angle [i - 2] = fabs((180/PI)*atan2(Set_X[i] - Set_X[i - 1], Set_Y[i] - Set_Y[i - 1])) ;
                 }
                 
-                 //   Set_Sign  [i - 1] = IMUData.sum_yaw_mahony > 0 ? 1 : 0;
-                    //Set_Angle [i - 1] = fabs(IMUData.sum_yaw_mahony) ; //(180/PI)*atan2(Set_X[i] - Set_X[i - 1], Set_Y[i] - Set_Y[i - 1]); 
-
+//                  Set_Sign  [i - 1] = IMUData.sum_yaw_mahony > 0 ? 1 : 0;
+//                  Set_Angle [i - 1] = fabs(IMUData.sum_yaw_mahony) ; //(180/PI)*atan2(Set_X[i] - Set_X[i - 1], Set_Y[i] - Set_Y[i - 1]);
+                
+                i++; // 下一个点
+                Navigation.MarkPot.Point_Order++;
+                OLED_CLS();
             }
+
             Temp = 16;
             for(int i = 0; i < 8; i++)
             {
@@ -586,16 +607,16 @@ void Get_Point(void)
             }
 
             OLED_CLS();
-            Balance_flash_read();
+           // Balance_flash_read();
             break;
         }
         case 3:
         {
-              Balance_flash_read();
+              //Balance_flash_read();
             break;
         }
     }
-    Balance_flash_read();
+    //Balance_flash_read();
 }
             
 

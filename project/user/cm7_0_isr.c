@@ -477,10 +477,6 @@ void uart2_isr (void)
             Azimuth  = get_two_points_azimuth(Start_Latitude, Start_Longitude, gnss_dot[0][10], gnss_dot[1][10]);         //Æ«ÀëÆðµã½Ç¶È 
             CarDirection = gnss.direction;
         }
-        if(Run_INS)
-        {
-            Distance = sqrt(pow(Start_X - INSData.Position_x, 2) + pow(Start_Y - INSData.Position_y, 2));
-        }
         
         
     }
