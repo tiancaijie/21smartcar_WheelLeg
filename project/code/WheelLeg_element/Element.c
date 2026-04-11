@@ -17,6 +17,8 @@ uint8 All_Dot = 8;
 uint8 Now_Dot_Flag = 0;
 uint8 Last_GPS_State = 0;
 uint8 State_get_count = 0;
+uint8 INS_Heading_Align_Done = 0;
+float INS_Heading_Align_Offset = 0;
 int Single_Bridge = 0;
 int BridgeUP_Flag = 0,BridgeDOWN_Flag = 0;
 
@@ -198,6 +200,7 @@ void Reset_StartPot(void)
 
 void Angle_Set(void)
 {
+        float angle_raw = 0;
 //    static int8 Last_Dot = 0;
 //    if(Set_Sign[7] == 2 && Last_Dot != Now_Dot)
 //    {
@@ -206,12 +209,28 @@ void Angle_Set(void)
 //    }
     if(Set_Sign[7] == 2)// && ABS(Expect_Angle - IMUData.sum_yaw_mahony) < 0.5)
     {
-      Expect_Angle = 720 *Now_Dot  + (float)Set_Angle[Now_Dot] * (Set_Sign[Now_Dot] == 0 ? (1):(-1));
+            angle_raw = 720 * Now_Dot + (float)Set_Angle[Now_Dot] * (Set_Sign[Now_Dot] == 0 ? (1) : (-1));
+
+            if(Run_INS && Now_Dot == 0 && INS_Heading_Align_Done == 0)
+            {
+                    INS_Heading_Align_Offset = -IMUData.sum_yaw_mahony - angle_raw;
+                    INS_Heading_Align_Done = 1;
+            }
+
+            Expect_Angle = angle_raw + (Run_INS ? INS_Heading_Align_Offset : 0);
       Now_Dot_Flag++;
     }
     else if(Set_Sign[7] != 2)
     {
-      Expect_Angle = (float)Set_Angle[Now_Dot] * (Set_Sign[Now_Dot] == 0 ? (1):(-1));
+            angle_raw = (float)Set_Angle[Now_Dot] * (Set_Sign[Now_Dot] == 0 ? (1) : (-1));
+
+            if(Run_INS && Now_Dot == 0 && INS_Heading_Align_Done == 0)
+            {
+                    INS_Heading_Align_Offset = -IMUData.sum_yaw_mahony - angle_raw;
+                    INS_Heading_Align_Done = 1;
+            }
+
+            Expect_Angle = angle_raw + (Run_INS ? INS_Heading_Align_Offset : 0);
       Now_Dot_Flag++;
     }
 }
@@ -260,6 +279,9 @@ void Speed_Set(void)
 
 void Run_Start(void)
 {   
+    static uint8 Segment_Run_Enabled = 0;
+    float yaw_err = 0;
+
     if(Run_INS)
     {
         float dx = (float)(Start_X - INSData.Position_x);
@@ -274,10 +296,29 @@ void Run_Start(void)
     if(Now_Dot_Flag == 1)
     {
       Reset_StartPot();
+            Segment_Run_Enabled = 0;
     }
-    if(Now_Dot_Flag == 2 && ABS(Expect_Angle + IMUData.sum_yaw_mahony) < 0.1)
+        if(Now_Dot_Flag == 2)
     {
-      Speed_Set();
+            yaw_err = Expect_Angle + IMUData.sum_yaw_mahony;
+
+            // Only gate at segment start; after pass, keep length control running.
+            if(Segment_Run_Enabled == 0)
+            {
+                    if(ABS(yaw_err) < 1.0)
+                    {
+                            Segment_Run_Enabled = 1;
+                    }
+                    else
+                    {
+                            hCtrl.Pitch.ExpectSpeed_Act = 0;
+                    }
+            }
+
+            if(Segment_Run_Enabled)
+            {
+                    Speed_Set();
+            }
     }
     if(Now_Dot_Flag == 3 && Now_Dot < All_Dot)
     {
@@ -285,6 +326,7 @@ void Run_Start(void)
       State_get_count = 0;
       Start_Latitude = 0;
       Start_Longitude = 0;
+            Segment_Run_Enabled = 0;
       Now_Dot++;
     }
 }
