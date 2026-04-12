@@ -198,82 +198,48 @@ void Reset_StartPot(void)
     }
 }
 
-void Angle_Set(void)
+static void Compute_Expect_Angle_From_Target(void)
 {
-        float angle_raw = 0;
-//    static int8 Last_Dot = 0;
-//    if(Set_Sign[7] == 2 && Last_Dot != Now_Dot)
-//    {
-//      Last_Dot = Now_Dot;
-//      Expect_Angle = IMUData.sum_yaw_mahony + 2*360;
-//    }
-    if(Set_Sign[7] == 2)// && ABS(Expect_Angle - IMUData.sum_yaw_mahony) < 0.5)
+    float angle_raw = 0;
+    float dx = 0;
+    float dy = 0;
+
+    if(Now_Dot >= All_Dot)
     {
-            angle_raw = 720 * Now_Dot + (float)Set_Angle[Now_Dot] * (Set_Sign[Now_Dot] == 0 ? (1) : (-1));
-
-            if(Run_INS && Now_Dot == 0 && INS_Heading_Align_Done == 0)
-            {
-                    INS_Heading_Align_Offset = -IMUData.sum_yaw_mahony - angle_raw;
-                    INS_Heading_Align_Done = 1;
-            }
-
-            Expect_Angle = angle_raw + (Run_INS ? INS_Heading_Align_Offset : 0);
-      Now_Dot_Flag++;
+        Now_Dot = 0;
     }
-    else if(Set_Sign[7] != 2)
+
+    dx = (float)(Set_X[Now_Dot] - INSData.Position_x);
+    dy = (float)(Set_Y[Now_Dot] - INSData.Position_y);
+    angle_raw = (float)((180.0 / PI) * atan2(dx, dy));
+
+    if(Run_INS && Now_Dot == 0 && INS_Heading_Align_Done == 0)
     {
-            angle_raw = (float)Set_Angle[Now_Dot] * (Set_Sign[Now_Dot] == 0 ? (1) : (-1));
-
-            if(Run_INS && Now_Dot == 0 && INS_Heading_Align_Done == 0)
-            {
-                    INS_Heading_Align_Offset = -IMUData.sum_yaw_mahony - angle_raw;
-                    INS_Heading_Align_Done = 1;
-            }
-
-            Expect_Angle = angle_raw + (Run_INS ? INS_Heading_Align_Offset : 0);
-      Now_Dot_Flag++;
+        INS_Heading_Align_Offset = -IMUData.sum_yaw_mahony - angle_raw;
+        INS_Heading_Align_Done = 1;
     }
+
+    Expect_Angle = angle_raw + (Run_INS ? INS_Heading_Align_Offset : 0);
 }
 
-//void Speed_Set(void)
-//{
-//    if(Distance > Set_Length[Now_Dot])
-//    {
-//      hCtrl.Pitch.ExpectSpeed_Act = 0;
-//      Now_Dot_Flag++;
-//    }
-//    else
-//    {
-//      hCtrl.Pitch.ExpectSpeed_Act = hCtrl.Pitch.ExpectSpeed_Exp;
-//    }
-//}
+void Angle_Set(void)
+{
+    Compute_Expect_Angle_From_Target();
+    Now_Dot_Flag++;
+}
 
 void Speed_Set(void)
 {
-    if(Run_GPS)
+    const float reach_dist = 0.08f;
+
+    if(Distance <= reach_dist)
     {
-        if(Distance > Set_Length[Now_Dot])
-        {
-            hCtrl.Pitch.ExpectSpeed_Act = 0;
-            Now_Dot_Flag++;
-        }
-        else
-        {
-            hCtrl.Pitch.ExpectSpeed_Act = hCtrl.Pitch.ExpectSpeed_Exp;
-        }
+        hCtrl.Pitch.ExpectSpeed_Act = 0;
+        Now_Dot_Flag++;
     }
-    
-    if(Run_INS)
+    else
     {
-        if(Distance > Set_Length[Now_Dot])
-        {
-            hCtrl.Pitch.ExpectSpeed_Act = 0;
-            Now_Dot_Flag++;
-        }
-        else
-        {
-            hCtrl.Pitch.ExpectSpeed_Act = hCtrl.Pitch.ExpectSpeed_Exp;
-        }
+        hCtrl.Pitch.ExpectSpeed_Act = hCtrl.Pitch.ExpectSpeed_Exp;
     }
 }
 
@@ -282,10 +248,16 @@ void Run_Start(void)
     static uint8 Segment_Run_Enabled = 0;
     float yaw_err = 0;
 
+    if(Now_Dot >= All_Dot)
+    {
+        hCtrl.Pitch.ExpectSpeed_Act = 0;
+        return;
+    }
+
     if(Run_INS)
     {
-        float dx = (float)(Start_X - INSData.Position_x);
-        float dy = (float)(Start_Y - INSData.Position_y);
+        float dx = (float)(Set_X[Now_Dot] - INSData.Position_x);
+        float dy = (float)(Set_Y[Now_Dot] - INSData.Position_y);
         Distance = sqrtf(dx * dx + dy * dy);
     }
 
@@ -300,7 +272,8 @@ void Run_Start(void)
     }
         if(Now_Dot_Flag == 2)
     {
-            yaw_err = Expect_Angle + IMUData.sum_yaw_mahony;
+            Compute_Expect_Angle_From_Target();
+            yaw_err = Expect_Angle - IMUData.sum_yaw_mahony;
 
             // Only gate at segment start; after pass, keep length control running.
             if(Segment_Run_Enabled == 0)
