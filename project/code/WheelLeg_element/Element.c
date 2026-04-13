@@ -212,35 +212,22 @@ void Angle_Setting(void)
     Expect_Angle = Set_Angle[Now_Dot];
 }
 
-//void Speed_Set(void)
-//{
-//    if(Distance > Set_Length[Now_Dot])
-//    {
-//      hCtrl.Pitch.ExpectSpeed_Act = 0;
-//      Now_Dot_Flag++;
-//    }
-//    else
-//    {
-//      hCtrl.Pitch.ExpectSpeed_Act = hCtrl.Pitch.ExpectSpeed_Exp;
-//    }
-//}
+void Angle_Set(void)
+{
+    Compute_Expect_Angle_From_Target();
+    Now_Dot_Flag++;
+}
 
 void Speed_Set(void)
 {
-    if(Run_GPS)
+    const float reach_dist = 0.08f;
+
+    if(Distance <= reach_dist)
     {
-        if(Distance > Set_Length[Now_Dot])
-        {
-            hCtrl.Pitch.ExpectSpeed_Act = 0;
-            Now_Dot_Flag++;
-        }
-        else
-        {
-            hCtrl.Pitch.ExpectSpeed_Act = hCtrl.Pitch.ExpectSpeed_Exp;
-        }
+        hCtrl.Pitch.ExpectSpeed_Act = 0;
+        Now_Dot_Flag++;
     }
-    
-    if(Run_INS)
+    else
     {
         if(Distance < 0.05f)
         {
