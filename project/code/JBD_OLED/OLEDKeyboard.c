@@ -36,10 +36,17 @@ uint8 PWMTest[4] = {0};
 uint32 Balance_PID[8];
 uint32 Run_SET[8];
 uint32 Control_SET[8];
+float Set_Angle[8];
+uint32 Set_Sign_X[8];
+uint32 Set_X_Row[8];
+uint32 Set_Sign_Y[8];
+uint32 Set_Y_Row[8];
 uint32 Set_Sign[8];
+double Set_Guidance_X[8];
+double Set_Guidance_Y[8];
 double Set_X[20] = {0};
 double Set_Y[20] = {0};
-uint32 SubSet_OKb;//璺戣溅妯″紡锛氱?戜竴銆佺?戜簩銆佺?戜笁
+uint32 SubSet_OKb;//跑车模式：�?�一、�?�二、�?�三
 float GPS_DisSET[8];
 float GPS_AngSET[8];
 double CoSub_OKb[100];
@@ -47,12 +54,12 @@ uint16 Getpoint_LastFlag = 192;
 unsigned char Oled_Model_Choose = 0;
 /******************************************************
 ** Function: Oled_Input
-** Description: 閿?鏄捐緭鍏ュ弬鏁?
+** Description: �?显输入参�?
 ** Others: 
 *******************************************************/
 void Oled_Input(void)             
 {
-    unsigned char SectorNum = 0;    //閿熸枻鎷峰?嬮敓鏂ゆ嫹閿熸枻鎷烽敓鏂ゆ嫹
+    unsigned char SectorNum = 0;    //锟斤拷�?�锟斤拷锟斤拷锟斤拷
     int Temp = 0;
     int input = 0;
     uint8 notation;
@@ -67,14 +74,15 @@ void Oled_Input(void)
     OLED_ShowStr(0,6,"4 Bal",2);
     OLED_ShowStr(85,0,"5 Ctrl",2);
     OLED_ShowStr(85,2,"6 XY",2);
+    
     Oled_Model_Choose = KeyboardInput(88, 6);
     OLED_CLS();
     
-    SectorNum = Oled_Model_Choose;//閿熸枻鎷烽敓鏂ゆ嫹閿熸枻鎷?
+    SectorNum = Oled_Model_Choose;//锟斤拷锟斤拷锟斤�?
     
     switch (Oled_Model_Choose)
     {
-        case 1:                                            // 閿熸枻鎷峰浘
+        case 1:                                            // 锟斤拷图
         {
             flash_read_page(0, 0, &SubSet_OKb, 1);
             //"Subject",
@@ -93,7 +101,7 @@ void Oled_Input(void)
                 SubSet_OKb = input;
 
                 flash_erase_page(0, 0);
-                //瀛?
+                //�?
                 flash_write_page(0, 0, &SubSet_OKb, 1);
             }
             OLED_CLS();
@@ -228,221 +236,49 @@ void Oled_Input(void)
             
             break;
         }
-        case 6 :
-        {
-            uint32 x_pack = 0;
-            uint32 y_pack = 0;
-            int32 x_raw = 0;
-            int32 y_raw = 0;
-            Temp = (SectorNum - 1) * 8 * 2;
-
-            for (int i = 0; i < 8; i++)
-            {
-                flash_read_page(0, Temp + 2 * i, &x_pack, 1);
-                flash_read_page(0, Temp + 2 * i + 1, &y_pack, 1);
-
-                x_raw = (int32)x_pack;
-                y_raw = (int32)y_pack;
-
-                OLED_CLS();
-                OLED_ShowStr(0, 0, "Point", 2);
-                OLED_Numbers(50, 0, i + 1);
-                OLED_ShowStr(0, 2, "X", 2);
-                OLED_Numbers(First_X, 2, x_raw);
-                OLED_ShowStr(0, 4, "Y", 2);
-                OLED_Numbers(First_X, 4, y_raw);
-
-                x_raw = KeyboardInput_with_Flash(0, Temp + 2 * i, Second_X, 2);
-                y_raw = KeyboardInput_with_Flash(0, Temp + 2 * i + 1, Second_X, 4);
-
-                Set_X[i] = (double)x_raw * 0.001;
-                Set_Y[i] = (double)y_raw * 0.001;
-
-                OLED_CLS();
-            }
-
-            OLED_CLS();
-            break;
-        }
-        case 8 :
+        case 6 :        //存放导航�?
         {
             Temp = (SectorNum - 1) * 8;
             
-            flash_read_page(0, Temp, (uint32*)CoSub_OKb, 100);
+            for (int i = 0; i < 8; i++)
+            {
+                flash_read_page_to_buffer(0, Temp + 4 * i, 1);
+                flash_write_page_from_buffer(0, Standby_Buffer, 1);
+                flash_read_page(0, Standby_Buffer, &Set_Sign_X[i], 1);
+
+                flash_read_page_to_buffer(0, Temp + 4 * i + 1, 1);
+                flash_write_page_from_buffer(0, Standby_Buffer, 1);
+                flash_read_page(0, Standby_Buffer, &Set_X_Row[i], 1);
+
+                flash_read_page_to_buffer(0, Temp + 4 * i + 2, 1);
+                flash_write_page_from_buffer(0, Standby_Buffer, 1);
+                flash_read_page(0, Standby_Buffer, &Set_Sign_Y[i], 1);
+
+                flash_read_page_to_buffer(0, Temp + 4 * i + 3, 1);
+                flash_write_page_from_buffer(0, Standby_Buffer, 1);
+                flash_read_page(0, Standby_Buffer, &Set_Y_Row[i], 1);
+
+                //OLED_ShowStr(0, 0, "Point", 2);
+                OLED_ShowStr(0, 3, i + 1, 2);
+                OLED_ShowStr(6, 0, "+-", 2);
+                OLED_Numbers(First_X, 0, Set_Sign_X[i]);
+                OLED_ShowStr(6, 2, "X", 2);
+                OLED_Numbers(First_X, 2, Set_X_Row[i]);
+                OLED_ShowStr(6, 4, "+-", 2);
+                OLED_Numbers(First_X, 4, Set_Sign_Y[i]);
+                OLED_ShowStr(6, 6, "Y", 2);
+                OLED_Numbers(First_X, 6, Set_Y_Row[i]);
             
-            OLED_ShowStr(0, 0, "PoNum", 2);             OLED_Numbers(50, 0, (int32)CoSub_OKb[0]);
-            OLED_ShowStr(0, 4, "Distance", 2);          OLED_Numbers(50, 4, (int32)CoSub_OKb[1]);
-            
-            input = KeyboardInput(88, 6);
-            
-            while(input > 50)
-            {
-                input = KeyboardInput(88, 0);
+                Set_Sign_X[i] = KeyboardInput_with_Flash(0, Temp + 4 * i, Second_X, 0);
+                Set_X_Row[i] = KeyboardInput_with_Flash(0, Temp + 4 * i + 1, Second_X, 2);
+                Set_Sign_Y[i] = KeyboardInput_with_Flash(0, Temp + 4 * i + 2, Second_X, 4);
+                Set_Y_Row[i] = KeyboardInput_with_Flash(0, Temp + 4 * i + 3, Second_X, 6);
+                OLED_CLS();
+                
             }
-            if(input != 0)
-            {
-                CoSub_OKb[0] = (double)input;
-            }
-            input = KeyboardInput(88, 6);
-            if(input != 0)
-            {
-                CoSub_OKb[1] = (double)input;
-            }
-            OLED_CLS();
-            
-            OLED_ShowStr(0, 0, "GPWay", 2);             OLED_Numbers(40, 0, (int32)CoSub_OKb[2]);
-            OLED_ShowStr(0, 1, "1.Hand", 2);
-            OLED_ShowStr(0, 2, "2.RT", 2);
-
-            OLED_ShowStr(0, 4, "Side", 2);              OLED_Numbers(40, 4, (int32)CoSub_OKb[3]);
-            OLED_ShowStr(0, 5, "1.Left", 2);
-            OLED_ShowStr(0, 6, "2.Right", 2);
-            
-            do
-            {
-                input = KeyboardInput(88,0);
-            }while (input > 2);
-            if (input != 0)
-            {
-                CoSub_OKb[2] = (double)input;
-            }
-            
-            do
-            {
-                input = KeyboardInput(88,6);
-            }while (input > 2);
-
-            if (input != 0)
-            {
-                CoSub_OKb[3] = (double)input;
-            }
-            OLED_CLS();
-            
-            if(CoSub_OKb[2] == 1)//鎵嬭緭
-            {
-                for(uint16 i = 0; i < 2*CoSub_OKb[0] - 2; i++)
-                {
-                    OLED_Numbers(0, 0, i);                             OLED_ShowStr(50, 0, "A", 2);
-                    OLED_ShowStr(0, 2, "X", 2);                        OLED_Numbers(30, 2, (int)CoSub_OKb[4*i+4]);
-                    OLED_ShowStr(0, 4, "Y", 2);                        OLED_Numbers(30, 4, (int)CoSub_OKb[4*i+5]);
-
-                    do
-                    {
-                        input = KeyboardInput(88,0);
-                    }while(input > 2);
-                    if (input != 0)
-                    {
-                        notation = (uint8)input;
-                    }
-
-                    input = KeyboardInput(88,6);
-                    if(input != 0)
-                    {
-                        if (input == 99999)
-                        {
-                            CoSub_OKb[4*i+4] = 0 ;
-                        }
-                        else if(notation == 1)
-                        {
-                            CoSub_OKb[4*i+4] = (double)input;
-                        }
-                        else if(notation == 2)
-                        {
-                            CoSub_OKb[4*i+4] = (double)-input;
-                        }
-                     }
-
-                    input = KeyboardInput(88, 0);
-                    if(input != 0)
-                    {
-                        if (input == 99999)
-                        {
-                            CoSub_OKb[4*i+5] = 0 ;
-                        }
-                        else
-                        {
-                            CoSub_OKb[4*i+5] = (double)input;
-                        }
-
-                     }
-
-                    OLED_CLS();
-
-                    OLED_Numbers(0, 0, i);                              OLED_ShowStr(50, 0, "B", 2);
-                    OLED_ShowStr(0, 2, "X", 2);                         OLED_Numbers(30, 2, (int)CoSub_OKb[4*i+6]);
-                    OLED_ShowStr(0, 4, "Y", 2);                         OLED_Numbers(30, 4, (int)CoSub_OKb[4*i+7]);
-
-                    do{
-                        input = KeyboardInput(90, 1);
-                    }while(input > 2);
-
-                    if (input != 0)
-                    {
-                        notation = (uint8)input;
-                    }
-
-                    input = KeyboardInput(90, 2);
-                    if(input != 0)
-                    {
-                        if (input == 99999)
-                        {
-                            CoSub_OKb[4*i+6] = 0 ;
-                        }
-                        else if(notation == 1)
-                        {
-                            CoSub_OKb[4*i+6] = (double)input;
-                        }
-                        else if(notation == 2)
-                        {
-                            CoSub_OKb[4*i+6] = (double)-input;
-                        }
-                     }
-
-                    input = KeyboardInput(90, 4);
-                    if(input != 0)
-                    {
-                        if (input == 99999)
-                        {
-                            CoSub_OKb[4*i+7] = 0 ;
-                        }
-                        else
-                        {
-                            CoSub_OKb[4*i+7] = (double)input;
-                        }
-                    }
-                    OLED_CLS();
-                }
-
-                OLED_ShowStr(0, 2, "Back.y", 2);
-                OLED_Numbers(50, 2, (int32)CoSub_OKb[99]);
-
-                input = KeyboardInput(90, 2);
-                if(input != 0)
-                {
-                    if (input == 99999)
-                    {
-                        CoSub_OKb[99] = 0 ;
-                    }
-                    else
-                    {
-                        CoSub_OKb[99] = (double)input;
-                    }
-
-                 }
-            }
-            else if(CoSub_OKb[2] == 2)//RT
-            {
-                hCtrl.OLEDState = ING;
-//                KeyboardInput_RT(90, 0, 2, 1.0, 2*(2*CoSub_OKb[0] - 2), Hyper_Select);
-            }
-
-            OLED_CLS();
-
-            flash_erase_page(0, Temp);
-            flash_write_page(0, Temp, (uint32*)CoSub_OKb, 100);
             break;
         }
-        
+ 
     }
     Set_flash_read();
     Run_flash_read();
@@ -455,7 +291,7 @@ void Oled_Input(void)
 void Get_Point(void)
 {
 
-    unsigned char SectorNum = 0;    //閿熸枻鎷峰?嬮敓鏂ゆ嫹閿熸枻鎷烽敓鏂ゆ嫹
+    unsigned char SectorNum = 0;    //锟斤拷�?�锟斤拷锟斤拷锟斤拷
     int Temp = 0;
     int input = 0;
     uint32 notation;
@@ -471,7 +307,7 @@ void Get_Point(void)
     Oled_Model_Choose = KeyboardInput(88, 6);
     OLED_CLS();
     
-    SectorNum = Oled_Model_Choose;//閿熸枻鎷烽敓鏂ゆ嫹閿熸枻鎷?
+    SectorNum = Oled_Model_Choose;//锟斤拷锟斤拷锟斤�?
     
     switch (Oled_Model_Choose)
     {
@@ -512,16 +348,11 @@ void Get_Point(void)
 //          OLED_Show_float(First_X,6,Navigation.current.Azimuth, 4, 1);
             
             input = KeyboardInput(88, 6);
-            while(input > 8)
-            {
-                OLED_ShowStr(0, 0, "max 8 points", 2);
-                input = KeyboardInput(88, 6);
-                OLED_CLS();
-            }
+            All_Dot = input;
                    
             OLED_CLS();
 
-            int i = 1;          
+            int i = 0;          
             Getpoint_LastFlag = uart_receiver.channel[2]; 
 
             while(i <= input)
@@ -538,38 +369,29 @@ void Get_Point(void)
                         Getpoint_LastFlag = uart_receiver.channel[2];
                         break;
                     }
-                    for(int i = 0; i < 10 ; i++); // 寮€鍏虫秷鎶?
+                    for(int i = 0; i < 10 ; i++); // 开关消�?
                 }
 
                 Set_X[i] = INSData.Position_x;
                 Set_Y[i] = INSData.Position_y;
                 
-                i++; // 涓嬩竴涓?鐐?
+                Set_Sign_X[i] = Set_X[i] > 0 ? 0 : 1;
+                Set_Sign_Y[i] = Set_Y[i] > 0 ? 0 : 1;
+                Set_X_Row [i] = (uint32)(fabs(Set_X[i] * 100));
+                Set_Y_Row [i] = (uint32)(fabs(Set_Y[i] * 100));       
+
+                i++; // 下一�?�?
                 Navigation.MarkPot.Point_Order++;
                 OLED_CLS();
             }
 
-            Temp = 80;
+            Temp = 40;
             for(int i = 0; i < 8; i++)
             {
-                int32 x_raw = 0;
-                int32 y_raw = 0;
-                uint32 x_pack = 0;
-                uint32 y_pack = 0;
-
-                if(i + 1 <= input)
-                {
-                    x_raw = (int32)(Set_X[i + 1] * 1000.0);
-                    y_raw = (int32)(Set_Y[i + 1] * 1000.0);
-                }
-
-                x_pack = (uint32)x_raw;
-                y_pack = (uint32)y_raw;
-                Set_X[i] = (double)x_raw * 0.001;
-                Set_Y[i] = (double)y_raw * 0.001;
-
-                flash_write_page(0, Temp++, &x_pack, 1);
-                flash_write_page(0, Temp++, &y_pack, 1);
+                flash_write_page(0, Temp++, &Set_Sign_X[i * 4], 1);
+                flash_write_page(0, Temp++, &Set_X_Row[i * 4 + 1], 1);
+                flash_write_page(0, Temp++, &Set_Sign_Y[i * 4 + 2], 1);
+                flash_write_page(0, Temp++, &Set_Y_Row[i * 4 + 3], 1);
             }
 
             OLED_CLS();
@@ -588,10 +410,10 @@ void Get_Point(void)
 
 /******************************************************
 ** Function: Oled_Display
-** Description: OLED鏄剧ず鍥惧儚鎴栬€呭彉閲?
+** Description: OLED显示图像或者变�?
 ** Others: 
 *******************************************************/
-void Oled_Display(void)                 //閿熸枻鎷烽敓鏂ゆ嫹閿熸枻鎷风ず
+void Oled_Display(void)                 //锟斤拷锟斤拷锟斤拷示
 {
     if(Oled_Model_Choose == 5)
     {
@@ -615,7 +437,7 @@ void Oled_Display(void)                 //閿熸枻鎷烽敓鏂ゆ嫹閿熸枻�
 
 /******************************************************
 ** Function: casex_Read
-** Description: 璇诲彇瀵瑰簲case涓?鐨勫彉閲?
+** Description: 读取对应case�?的变�?
 ** Others: 
 *******************************************************/
 void Run_flash_read(void)
@@ -683,20 +505,16 @@ void Control_flash_read(void)
 
 void Set_flash_read(void)
 {
-        int case_Temp = 80;
-        uint32 x_pack = 0;
-        uint32 y_pack = 0;
-        for(int i = 0; i < 8; i++)
-        {
-            flash_read_page(0, case_Temp++, &x_pack, 1);
-            flash_read_page(0, case_Temp++, &y_pack, 1);
-            Set_X[i] = (double)((int32)x_pack) * 0.001;
-            Set_Y[i] = (double)((int32)y_pack) * 0.001;
-        }
-
-    case_Temp = 16;
+    int case_Temp = 40;
     for(int i = 0; i < 8; i++)
     {
+        flash_read_page(0, case_Temp++, &Set_Sign_X[i], 1);
+        flash_read_page(0, case_Temp++, &Set_X_Row[i], 1);
+        Set_Guidance_X[i] = Set_X_Row[i] * 0.01f * (Set_Sign_X[i] == 0 ? (1):(-1));
+        flash_read_page(0, case_Temp++, &Set_Sign_Y[i], 1);
+        flash_read_page(0, case_Temp++, &Set_Y_Row[i], 1);
+        Set_Guidance_Y[i] = Set_Y_Row[i] * 0.01f * (Set_Sign_Y[i] == 0 ? (1):(-1));
+
       flash_read_page(0, case_Temp++, &Set_Sign[i], 1);
     }
 }
@@ -708,7 +526,7 @@ void GPS_flash_read(void)
 
 void Hyperparameter_Init(void)
 {
-    //璺戣溅妯″紡
+    //跑车模式
     flash_read_page(0, 0, &SubSet_OKb, 1);
     hCtrl.Subject_Set = SubSet_OKb;
     switch(hCtrl.Subject_Set)

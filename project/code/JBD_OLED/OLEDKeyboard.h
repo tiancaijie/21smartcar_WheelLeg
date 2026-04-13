@@ -20,6 +20,13 @@ extern uint32 Threshold;
 
 
 /*----键显显示要用的变量----*/
+extern uint32 Set_Sign_X[8];
+extern uint32 Set_X_Row[8]; 
+extern uint32 Set_Sign_Y[8];
+extern uint32 Set_Y_Row[8];  
+extern float Set_Angle[8];
+extern double Set_Guidance_X[8];
+extern double Set_Guidance_Y[8];
 extern uint32 Set_Sign[8];
 extern double Set_X[20] ;
 extern double Set_Y[20] ;
