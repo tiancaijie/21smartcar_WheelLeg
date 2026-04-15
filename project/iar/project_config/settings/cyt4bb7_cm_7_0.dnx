@@ -25,8 +25,8 @@
         <MemConfigValue>D:\IAR\IAR\arm\config\debugger\Infineon\CYT4BB_M7.ddf</MemConfigValue>
     </PlDriver>
     <ArmDriver>
-        <EnforceMemoryConfiguration>1</EnforceMemoryConfiguration>
         <EnableCache>1</EnableCache>
+        <EnforceMemoryConfiguration>1</EnforceMemoryConfiguration>
     </ArmDriver>
     <Exceptions>
         <StopOnUncaught>_ 0</StopOnUncaught>
@@ -35,8 +35,8 @@
     <SWOManager>
         <SamplingDivider>8192</SamplingDivider>
         <OverrideClock>0</OverrideClock>
-        <CpuClock>1953721961</CpuClock>
-        <SwoClock>1376416626</SwoClock>
+        <CpuClock>172052037</CpuClock>
+        <SwoClock>1684104530</SwoClock>
         <DataLogMode>0</DataLogMode>
         <ItmPortsEnabled>63</ItmPortsEnabled>
         <ItmTermIOPorts>1</ItmTermIOPorts>
@@ -46,7 +46,7 @@
         <PowerConnectPC>1</PowerConnectPC>
     </SWOManager>
     <DebugChecksum>
-        <Checksum>3235105289</Checksum>
+        <Checksum>1243550224</Checksum>
     </DebugChecksum>
     <Disassembly>
         <MixedMode>1</MixedMode>
@@ -91,10 +91,6 @@
         <EventLSU>0</EventLSU>
         <EventSLEEP>0</EventSLEEP>
     </SWOTraceWindow>
-    <TermIOLog>
-        <LoggingEnabled>_ 0</LoggingEnabled>
-        <LogFile>_ ""</LogFile>
-    </TermIOLog>
     <DisassembleMode>
         <mode>0</mode>
     </DisassembleMode>
@@ -102,6 +98,10 @@
         <Bp0>_ 0 "EMUL_CODE" "0x1008'b570" 0 0 1 "" 0 "" 0</Bp0>
         <Count>1</Count>
     </Breakpoints2>
+    <TermIOLog>
+        <LoggingEnabled>_ 0</LoggingEnabled>
+        <LogFile>_ ""</LogFile>
+    </TermIOLog>
     <Aliases>
         <Count>0</Count>
         <SuppressDialog>0</SuppressDialog>

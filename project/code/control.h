@@ -160,6 +160,7 @@ extern float Swerve_Offset[2];
 extern float Swerve_Step;
 extern float Final_Speed;
 extern float ay_last;
+extern float gx_last;
 extern int Slow_Flag;
 extern float Hill_Height;
 float DirectionControl(int EleMode, int NewError);

@@ -293,16 +293,16 @@ void VOFA_ParameterSent(uart_index_enum uart_n)
     uint8 i = 0;
     uint8 end[4] = {0x00, 0x00, 0x80, 0x7f};
 
-    SendValue[0].floatValue = (float)IMUData.pitch_mahony;
+    SendValue[0].floatValue = (float)Now_Dot_Flag;
     SendValue[1].floatValue = (float)uart_receiver.channel[0];
     SendValue[2].floatValue = (float)uart_receiver.channel[1];
     SendValue[3].floatValue = (float)uart_receiver.channel[2];
     SendValue[4].floatValue = (float)uart_receiver.channel[3];
-    SendValue[5].floatValue = (float)uart_receiver.channel[4];
-    SendValue[6].floatValue = (float)uart_receiver.channel[5];
+    SendValue[5].floatValue = (float)gx_last;
+    SendValue[6].floatValue = (float)hCtrl.Pitch.ExpectOmega;
     SendValue[7].floatValue = (float)Expect_Angle;
-    SendValue[8].floatValue = (float)hCtrl.Pitch.ExpectSpeed_Act;
-    SendValue[9].floatValue = (float)hCtrl.Pitch.Output;
+    SendValue[8].floatValue = (float)Now_Dot;
+    SendValue[9].floatValue = (float)All_Dot;
     SendValue[10].floatValue = (float)INSData.Position_y;
     SendValue[11].floatValue = (float)INSData.Position_x;
 

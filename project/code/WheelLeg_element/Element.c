@@ -10,10 +10,11 @@
 #include "control.h"
 
 float Expect_Angle = 0;
+float Expect_Angle_Pitch = 0;
 float Row_LegOffset[2] = {0};
 float Single_Angle = 10;
 uint8 Now_Dot = 1;
-uint8 All_Dot = 8;
+uint32 All_Dot = 8;
 uint8 Now_Dot_Flag = 0;
 uint8 Last_GPS_State = 0;
 uint8 State_get_count = 0;
@@ -212,33 +213,24 @@ void Angle_Setting(void)
     Expect_Angle = Set_Angle[Now_Dot];
 }
 
-void Angle_Set(void)
-{
-    Compute_Expect_Angle_From_Target();
-    Now_Dot_Flag++;
-}
 
 void Speed_Set(void)
 {
-    const float reach_dist = 0.08f;
 
-    if(Distance <= reach_dist)
+    if(Distance < 0.1)
     {
         hCtrl.Pitch.ExpectSpeed_Act = 0;
         Now_Dot_Flag++;
     }
+    else if(Distance < 1.0)
+    {
+        hCtrl.Pitch.ExpectSpeed_Act =  Distance * hCtrl.Pitch.ExpectSpeed_Exp;
+    }
     else
     {
-        if(Distance < 0.05f)
-        {
-            hCtrl.Pitch.ExpectSpeed_Act = 0;
-            Now_Dot_Flag++;
-        }
-        else
-        {
-            hCtrl.Pitch.ExpectSpeed_Act = hCtrl.Pitch.ExpectSpeed_Exp;
-        }
+        hCtrl.Pitch.ExpectSpeed_Act = hCtrl.Pitch.ExpectSpeed_Exp;
     }
+    
 }
 
 void P_to_P(void)
@@ -252,7 +244,14 @@ void P_to_P(void)
             Distance = sqrtf(dx * dx + dy * dy);
 
             //Set_Sign  [Now_Dot] = (180/PI)*atan2(Set_X[Now_Dot + 1] - INSData.Position_x, Set_Y[Now_Dot + 1] - INSData.Position_y) > 0 ? 1 : 0;
-            Set_Angle [Now_Dot] = ((180/PI)*atan2(Set_Guidance_X[Now_Dot] - INSData.Position_x, Set_Guidance_Y[Now_Dot] - INSData.Position_y)) ;
+            if(Set_Sign[7] == 2)
+            {
+                Set_Angle [Now_Dot] = 720 * (Now_Dot - 1) + ((180/PI)*atan2(-(Set_Guidance_X[Now_Dot] - INSData.Position_x), Set_Guidance_Y[Now_Dot] - INSData.Position_y)) ;
+            }
+            else
+            {
+                Set_Angle [Now_Dot] = ((180/PI)*atan2(-(Set_Guidance_X[Now_Dot] - INSData.Position_x), Set_Guidance_Y[Now_Dot] - INSData.Position_y)) ;
+            }
 
             Angle_Setting();
         }
@@ -282,10 +281,10 @@ void Run_Start(void)
         P_to_P();
         yaw_err = Expect_Angle + IMUData.sum_yaw_mahony;
 
-        // Only gate at segment start; after pass, keep length control running.
+        
         if(Segment_Run_Enabled == 0)
         {
-            if(ABS(yaw_err) < 5.0)
+            if(ABS(yaw_err) < 0.5)
             {
                 Segment_Run_Enabled = 1;
             }
@@ -302,26 +301,26 @@ void Run_Start(void)
     }
     if(Now_Dot_Flag == 3 && Now_Dot < All_Dot)
     {
-        if(Set_Sign[7] == 2)
-        {
-            //先完成原地转圈，再执行下面的重置与换点
-            if(Spin_State == 0)
-            {
-                // 以当前航向为基准，再转两圈（720 度）
-                Expect_Angle = IMUData.sum_yaw_mahony + 720.0f;
-                Spin_State   = 1;
-            }
-
-            // 转圈还没完成：直接返回，本周期不执行下面的重置和换点
-            if(ABS(Expect_Angle - IMUData.sum_yaw_mahony) > 0.5f)
-            {
-                hCtrl.Pitch.ExpectSpeed_Act = 0;
-                return;
-            }
-
-            // 转圈完成，恢复状态，允许执行下面的重置逻辑
-            Spin_State = 0;
-        }
+//        if(Set_Sign[7] == 2)
+//        {
+//            //先完成原地转圈，再执行下面的重置与换点
+//            if(Spin_State == 0)
+//            {
+//                // 以当前航向为基准，再转两圈（720 度）
+//                Expect_Angle = -IMUData.sum_yaw_mahony - 720.0f;
+//                Spin_State   = 1;
+//            }
+//
+//            // 转圈还没完成：直接返回，本周期不执行下面的重置和换点
+//            if(ABS(Expect_Angle + IMUData.sum_yaw_mahony) > 0.5f)
+//            {
+//                hCtrl.Pitch.ExpectSpeed_Act = 0;
+//                return;
+//            }
+//
+//            // 转圈完成，恢复状态，允许执行下面的重置逻辑
+//            Spin_State = 2;
+//        }
         Now_Dot_Flag = 0;
         State_get_count = 0;
         Start_Latitude = 0;

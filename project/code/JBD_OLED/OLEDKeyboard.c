@@ -259,7 +259,7 @@ void Oled_Input(void)
                 flash_read_page(0, Standby_Buffer, &Set_Y_Row[i], 1);
 
                 //OLED_ShowStr(0, 0, "Point", 2);
-                OLED_ShowStr(0, 3, i + 1, 2);
+                //OLED_ShowStr(0, 3, Temp[i], 2);
                 OLED_ShowStr(6, 0, "+-", 2);
                 OLED_Numbers(First_X, 0, Set_Sign_X[i]);
                 OLED_ShowStr(6, 2, "X", 2);
@@ -328,6 +328,7 @@ void Get_Point(void)
                 Run_GPS = 1;
                 Run_INS = 0;
                 notation = 0;
+                flash_erase_page(0, 95);
                 flash_write_page(0, 95, &notation, 1);
             }
             else
@@ -335,6 +336,7 @@ void Get_Point(void)
                 Run_GPS = 0;
                 Run_INS = 1;
                 notation = 1;
+                flash_erase_page(0, 95);
                 flash_write_page(0, 95, &notation, 1);
             }
             OLED_CLS();
@@ -348,14 +350,25 @@ void Get_Point(void)
 //          OLED_Show_float(First_X,6,Navigation.current.Azimuth, 4, 1);
             
             input = KeyboardInput(88, 6);
-            All_Dot = input;
+            while(input > 8)
+            {
+                OLED_ShowStr(0, 0, "max 8 points", 2);
+                input = KeyboardInput(88, 6);
+                OLED_CLS();
+            }
+
+            All_Dot = (uint32)input;
+            
+            Temp = 72;
+            flash_erase_page(0, Temp);
+            flash_write_page(0, Temp, &All_Dot, 1);
                    
             OLED_CLS();
 
             int i = 0;          
             Getpoint_LastFlag = uart_receiver.channel[2]; 
 
-            while(i <= input)
+            while(i < input)
             {
                 
                 OLED_Numbers(First_X,0,Navigation.MarkPot.Point_Order);
@@ -388,10 +401,17 @@ void Get_Point(void)
             Temp = 40;
             for(int i = 0; i < 8; i++)
             {
-                flash_write_page(0, Temp++, &Set_Sign_X[i * 4], 1);
-                flash_write_page(0, Temp++, &Set_X_Row[i * 4 + 1], 1);
-                flash_write_page(0, Temp++, &Set_Sign_Y[i * 4 + 2], 1);
-                flash_write_page(0, Temp++, &Set_Y_Row[i * 4 + 3], 1);
+                flash_erase_page(0, Temp + 4 * i + 0);
+                flash_write_page(0, Temp + 4 * i + 0, &Set_Sign_X[i], 1);
+
+                flash_erase_page(0, Temp + 4 * i + 1);
+                flash_write_page(0, Temp + 4 * i + 1, &Set_X_Row[i], 1);
+
+                flash_erase_page(0, Temp + 4 * i + 2);
+                flash_write_page(0, Temp + 4 * i + 2, &Set_Sign_Y[i], 1);
+
+                flash_erase_page(0, Temp + 4 * i + 3);
+                flash_write_page(0, Temp + 4 * i + 3, &Set_Y_Row[i], 1);
             }
 
             OLED_CLS();
@@ -514,9 +534,18 @@ void Set_flash_read(void)
         flash_read_page(0, case_Temp++, &Set_Sign_Y[i], 1);
         flash_read_page(0, case_Temp++, &Set_Y_Row[i], 1);
         Set_Guidance_Y[i] = Set_Y_Row[i] * 0.01f * (Set_Sign_Y[i] == 0 ? (1):(-1));
-
-      flash_read_page(0, case_Temp++, &Set_Sign[i], 1);
     }
+    
+    case_Temp = 72;
+    flash_read_page(0, case_Temp, &All_Dot, 1);
+    
+    //Set_Sign is configured in case 3 (flash 16..23), not in XY storage area.
+    case_Temp = 16;
+    for(int i = 0; i < 8; i++)
+    {
+        flash_read_page(0, case_Temp + i, &Set_Sign[i], 1);
+    }
+    
 }
       
 void GPS_flash_read(void)

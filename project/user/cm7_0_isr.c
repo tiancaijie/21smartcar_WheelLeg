@@ -86,18 +86,19 @@ void pit0_ch0_isr()                     // 定时器通道 0 周期中断服务函数
 
     if (ms20 >= 10)           //20ms
     {
-        Pitch_LegCtrl();      
+        //Pitch_LegCtrl();      
         ms20 = 0;
     }
     if (ms8 >= 4)             //8ms
     {
-
+             
         ms8=0;
     }
     if (ms4 >= 2)             //4ms
     {
         YawAngleCtrl();                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
         PitchAngleCtrl();
+        Pitch_LegCtrl(); 
         ms4=0;
     }
     
@@ -108,7 +109,6 @@ void pit0_ch0_isr()                     // 定时器通道 0 周期中断服务函数
     PWM_Output(&L_leg,&R_leg);
     SAFE_PROTECT();
     
-
 }
 
 void pit0_ch1_isr()                     // 定时器通道 1 周期中断服务函数      

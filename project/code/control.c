@@ -313,7 +313,7 @@ void PitchOmegaCtrl(void)
 *************************************************/
 void PitchAngleCtrl(void)
 {
-    hCtrl.Pitch.ExpectOmega = PID_calc(&PID_PitchAngle,0,(IMUData.pitch_mahony - hCtrl.Pitch.BalancePoint));
+    hCtrl.Pitch.ExpectOmega = PID_calc(&PID_PitchAngle,Expect_Angle_Pitch,(IMUData.pitch_mahony - hCtrl.Pitch.BalancePoint));
 }
 
 void YawOmegaCtrl(void)
@@ -387,20 +387,10 @@ void SAFE_PROTECT(void)
 
 void Remote_Conctol (void)
 {
-//    uart_receiver.channel[0] -= 992;
-//    uart_receiver.channel[1] -= 992;
     if(uart_receiver.channel[3] == 1792)                                               //4通道保护（是否打点）
     {
-//        if(uart_receiver.channel[0] != 0)
-//        {
-            Expect_Angle += (uart_receiver.channel[0] - 992) * 0.01 ;                    //1通道方向
-       // }
+        Expect_Angle += (uart_receiver.channel[0] - 992) * 0.01 ;                    //1通道方向
         hCtrl.Pitch.ExpectSpeed_Act = (uart_receiver.channel[1] - 992) * 1 ;         //2通道油门
     }
-//    else
-//    {
-//       Angle_Set();                                                          
-//      // Run_flash_read();
-//      // Speed_Set();
-//    }
+
 }
