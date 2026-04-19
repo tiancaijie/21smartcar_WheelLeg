@@ -127,7 +127,7 @@ PID_InitTypeDef   PID_SwerveAngle_init=
     .outMax  = 0.055,
 };
 
-PID_HandleTypeDef PID_Patrol_Line;  
+PID_HandleTypeDef PID_Patrol_Line;
 
 void PID_InitAll(void)
 {
@@ -196,12 +196,12 @@ void Angle_cal(void)
     gx_last = gx_last*0.85 + IMUData.gx*0.15;
     gy_last = gy_last*0.85 + IMUData.gy*0.15;
     gz_last = gz_last*0.85 + IMUData.gz*0.15;
-    
+
     IMUData.yaw_mahony_Last = IMUData.yaw_trans;
 
     MahonyAHRSupdateIMU(&IMUData.q[0],IMUData.gx,IMUData.gy,IMUData.gz,ax_last,ay_last,az_last);       //闂佺硶鏅炲銊ц姳閻炲潊hony缂備胶濮甸〃鍡欐兜閸洖鍗抽悗娑櫳戦悡锟介梺鎼炲劜缁嬫垿宕㈤幘璇叉瀬闁谎咁煩mData.q
     get_angle(&IMUData.q[0],&IMUData.yaw_mahony,&IMUData.pitch_mahony,&IMUData.roll_mahony);  //婵炲濮存绋棵洪幘璇茬闁告劏鏅滃▓鍫曟偡濞嗘瑧鎮奸柣锝堫嚙閳诲氦顦冲┑顖滃劋閹棁绠涢幘宕囦粴闂佹眹鍔岀�氼垶锝炲Δ浣瑰劅闁跨噦鎷�
-    
+
     if((IMUData.yaw_mahony - hCtrl.Yaw.BalancePoint) <= PI && (IMUData.yaw_mahony - hCtrl.Yaw.BalancePoint) >= -PI)
     {
         IMUData.yaw_trans = (IMUData.yaw_mahony - hCtrl.Yaw.BalancePoint);
@@ -214,10 +214,10 @@ void Angle_cal(void)
     {
         IMUData.yaw_trans = (IMUData.yaw_mahony - hCtrl.Yaw.BalancePoint) - 2 * PI;
     }
-    
+
     IMUData.yaw_mahony_turns = (IMUData.yaw_mahony_Last - IMUData.yaw_trans) >  PI ? IMUData.yaw_mahony_turns + 1 : IMUData.yaw_mahony_turns;
     IMUData.yaw_mahony_turns = (IMUData.yaw_mahony_Last - IMUData.yaw_trans) < -PI ? IMUData.yaw_mahony_turns - 1 : IMUData.yaw_mahony_turns;
-    
+
     IMUData.sum_yaw_mahony = (float)IMUData.yaw_mahony_turns*2*PI + IMUData.yaw_trans;
     IMUData.sum_yaw_mahony = Rad2Deg(IMUData.sum_yaw_mahony);
 }
@@ -287,12 +287,28 @@ float Wiggle_Limit_Init = 0.022;//0.024
 float Wiggle_Step_Init = 0.00032;//0.00032
 int Slow_Flag = 0;
 int Single_Jump = 0;
+float LegOutput = 0;
 void Pitch_LegCtrl(void)
 {
     Remote_Conctol();
-    float  LegOutput;
+
     LegOutput = PID_calc(&PID_PitchLeg, -hCtrl.Pitch.ExpectSpeed_Act, (-motor_value.receive_left_speed_data + motor_value.receive_right_speed_data)/2);
-    hCtrl.Pitch.LegOutput = (hCtrl.Pitch.LegOutput * 19 + LegOutput * 1) / 20;
+    //hCtrl.Pitch.LegOutput = (hCtrl.Pitch.LegOutput * 29 + LegOutput * 1) / 30;
+    if (fabsf(LegOutput) > 1000)
+    {
+       if(fabsf(hCtrl.Pitch.ExpectSpeed_Act) > 550)
+       {
+          hCtrl.Pitch.LegOutput += LegOutput / 200;
+       }
+       else
+       {
+          hCtrl.Pitch.LegOutput += LegOutput / 100;
+       }
+    }
+    else
+    {
+       hCtrl.Pitch.LegOutput = (hCtrl.Pitch.LegOutput * 19 + LegOutput * 1) / 20;
+    }
     hCtrl.Pitch.LegOutput = Amplitude_Limit(hCtrl.Pitch.LegOutput, -1200, 1200);
 }
 

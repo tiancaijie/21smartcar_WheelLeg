@@ -55,31 +55,31 @@ unsigned char Oled_Model_Choose = 0;
 /******************************************************
 ** Function: Oled_Input
 ** Description: �?显输入参�?
-** Others: 
+** Others:
 *******************************************************/
-void Oled_Input(void)             
+void Oled_Input(void)
 {
     unsigned char SectorNum = 0;    //锟斤拷�?�锟斤拷锟斤拷锟斤拷
     int Temp = 0;
     int input = 0;
     uint8 notation;
-    
+
     Oled_Model_Choose = 0;
     CH455_Write();
     OLED_CLS();
-    
+
     OLED_ShowStr(0,0,"1 Sub",2);
     OLED_ShowStr(0,2,"2 RUN",2);
     OLED_ShowStr(0,4,"3 EMP",2);
     OLED_ShowStr(0,6,"4 Bal",2);
     OLED_ShowStr(85,0,"5 Ctrl",2);
     OLED_ShowStr(85,2,"6 XY",2);
-    
+
     Oled_Model_Choose = KeyboardInput(88, 6);
     OLED_CLS();
-    
+
     SectorNum = Oled_Model_Choose;//锟斤拷锟斤拷锟斤�?
-    
+
     switch (Oled_Model_Choose)
     {
         case 1:                                            // 锟斤拷图
@@ -110,7 +110,7 @@ void Oled_Input(void)
         case 2:
         {
             Temp = (SectorNum - 1) * 8;
-            
+
             for (int i = 0; i < 4; i++)
             {
                 flash_read_page_to_buffer(0, Temp + i , 1);
@@ -130,7 +130,7 @@ void Oled_Input(void)
         case 3 :        //control
         {
             Temp = (SectorNum - 1) * 8;
-            
+
             for (int i = 0; i < 4; i++)
             {
                 flash_read_page_to_buffer(0, Temp + i , 1);
@@ -145,7 +145,7 @@ void Oled_Input(void)
             Set_Sign[2] = KeyboardInput_with_Flash(0, Temp + 2, Second_X, 4);
             Set_Sign[3] = KeyboardInput_with_Flash(0, Temp + 3, Second_X, 6);
             OLED_CLS();
-            
+
             for (int i = 4; i < 8; i++)
             {
                 flash_read_page_to_buffer(0, Temp + i , 1);
@@ -158,16 +158,16 @@ void Oled_Input(void)
             Set_Sign[4] = KeyboardInput_with_Flash(0, Temp + 4, Second_X, 0);
             Set_Sign[5] = KeyboardInput_with_Flash(0, Temp + 5, Second_X, 2);
             Set_Sign[6] = KeyboardInput_with_Flash(0, Temp + 6, Second_X, 4);
-            Set_Sign[7] = KeyboardInput_with_Flash(0, Temp + 7, Second_X, 6); 
+            Set_Sign[7] = KeyboardInput_with_Flash(0, Temp + 7, Second_X, 6);
             OLED_CLS();
             break;
-          
+
             break;
         }
         case 4 :        //Balance
         {
             Temp = (SectorNum - 1) * 8;
-            
+
             for (int i = 0; i < 4; i++)
             {
                 flash_read_page_to_buffer(0, Temp + i , 1);
@@ -195,15 +195,15 @@ void Oled_Input(void)
             Balance_PID[4] = KeyboardInput_with_Flash(0, Temp + 4, Second_X, 0);
             Balance_PID[5] = KeyboardInput_with_Flash(0, Temp + 5, Second_X, 2);
             Balance_PID[6] = KeyboardInput_with_Flash(0, Temp + 6, Second_X, 4);
-            Balance_PID[7] = KeyboardInput_with_Flash(0, Temp + 7, Second_X, 6); 
+            Balance_PID[7] = KeyboardInput_with_Flash(0, Temp + 7, Second_X, 6);
             OLED_CLS();
-            
+
             break;
         }
         case 5 :        //Element
         {
             Temp = (SectorNum - 1) * 8;
-            
+
             for (int i = 0; i < 4; i++)
             {
                 flash_read_page_to_buffer(0, Temp + i , 1);
@@ -218,7 +218,7 @@ void Oled_Input(void)
             Control_SET[2] = KeyboardInput_with_Flash(0, Temp + 2, Second_X, 4);
             Control_SET[3] = KeyboardInput_with_Flash(0, Temp + 3, Second_X, 6);
             OLED_CLS();
-            
+
             for (int i = 4; i < 8; i++)
             {
                 flash_read_page_to_buffer(0, Temp + i , 1);
@@ -231,15 +231,15 @@ void Oled_Input(void)
             Control_SET[4] = KeyboardInput_with_Flash(0, Temp + 4, Second_X, 0);
             Control_SET[5] = KeyboardInput_with_Flash(0, Temp + 5, Second_X, 2);
             Control_SET[6] = KeyboardInput_with_Flash(0, Temp + 6, Second_X, 4);
-            Control_SET[7] = KeyboardInput_with_Flash(0, Temp + 7, Second_X, 6); 
+            Control_SET[7] = KeyboardInput_with_Flash(0, Temp + 7, Second_X, 6);
             OLED_CLS();
-            
+
             break;
         }
         case 6 :        //存放导航�?
         {
             Temp = (SectorNum - 1) * 8;
-            
+
             for (int i = 0; i < 8; i++)
             {
                 flash_read_page_to_buffer(0, Temp + 4 * i, 1);
@@ -268,17 +268,17 @@ void Oled_Input(void)
                 OLED_Numbers(First_X, 4, Set_Sign_Y[i]);
                 OLED_ShowStr(6, 6, "Y", 2);
                 OLED_Numbers(First_X, 6, Set_Y_Row[i]);
-            
+
                 Set_Sign_X[i] = KeyboardInput_with_Flash(0, Temp + 4 * i, Second_X, 0);
                 Set_X_Row[i] = KeyboardInput_with_Flash(0, Temp + 4 * i + 1, Second_X, 2);
                 Set_Sign_Y[i] = KeyboardInput_with_Flash(0, Temp + 4 * i + 2, Second_X, 4);
                 Set_Y_Row[i] = KeyboardInput_with_Flash(0, Temp + 4 * i + 3, Second_X, 6);
                 OLED_CLS();
-                
+
             }
             break;
         }
- 
+
     }
     Set_flash_read();
     Run_flash_read();
@@ -295,20 +295,20 @@ void Get_Point(void)
     int Temp = 0;
     int input = 0;
     uint32 notation;
-    
+
     Oled_Model_Choose = 0;
     CH455_Write();
     OLED_CLS();
-    
+
     OLED_ShowStr(0,0,"1 Run",2);
     OLED_ShowStr(0,2,"2 Pot",2);
     OLED_ShowStr(0,4,"3 ",2);
-    
+
     Oled_Model_Choose = KeyboardInput(88, 6);
     OLED_CLS();
-    
+
     SectorNum = Oled_Model_Choose;//锟斤拷锟斤拷锟斤�?
-    
+
     switch (Oled_Model_Choose)
     {
         case 1 :
@@ -316,13 +316,13 @@ void Get_Point(void)
             flash_read_page_to_buffer(0, 95, 1);
             flash_write_page_from_buffer(0, Standby_Buffer, 1);
             flash_read_page(0, Standby_Buffer, &notation, 1);
-            
+
             OLED_ShowStr(0,0,"mode",2);
             OLED_ShowStr(0,2,"GPS  0",2);
             OLED_ShowStr(0,4,"INS  1",2);
             OLED_Numbers(50,0,notation);
             input = KeyboardInput(88, 6);
-            
+
             if(input == 0)
             {
                 Run_GPS = 1;
@@ -348,7 +348,7 @@ void Get_Point(void)
 //          OLED_Show_float(First_X,2,Navigation.current.X, 4, 1);
 //          OLED_Show_float(First_X,4,Navigation.current.Y, 4, 1);
 //          OLED_Show_float(First_X,6,Navigation.current.Azimuth, 4, 1);
-            
+
             input = KeyboardInput(88, 6);
             while(input > 8)
             {
@@ -358,25 +358,25 @@ void Get_Point(void)
             }
 
             All_Dot = (uint32)input;
-            
+
             Temp = 72;
             flash_erase_page(0, Temp);
             flash_write_page(0, Temp, &All_Dot, 1);
-                   
+
             OLED_CLS();
 
-            int i = 0;          
-            Getpoint_LastFlag = uart_receiver.channel[2]; 
+            int i = 0;
+            Getpoint_LastFlag = uart_receiver.channel[2];
 
             while(i < input)
             {
-                
+
                 OLED_Numbers(First_X,0,Navigation.MarkPot.Point_Order);
                 OLED_ShowStr(0,2,"wait enter",2);
 
                 while(1)
                 {
-                    if( (Getpoint_LastFlag == 192 && uart_receiver.channel[2] == 1792) || 
+                    if( (Getpoint_LastFlag == 192 && uart_receiver.channel[2] == 1792) ||
                         (Getpoint_LastFlag == 1792 && uart_receiver.channel[2] == 192) )
                     {
                         Getpoint_LastFlag = uart_receiver.channel[2];
@@ -387,11 +387,11 @@ void Get_Point(void)
 
                 Set_X[i] = INSData.Position_x;
                 Set_Y[i] = INSData.Position_y;
-                
+
                 Set_Sign_X[i] = Set_X[i] > 0 ? 0 : 1;
                 Set_Sign_Y[i] = Set_Y[i] > 0 ? 0 : 1;
                 Set_X_Row [i] = (uint32)(fabs(Set_X[i] * 100));
-                Set_Y_Row [i] = (uint32)(fabs(Set_Y[i] * 100));       
+                Set_Y_Row [i] = (uint32)(fabs(Set_Y[i] * 100));
 
                 i++; // 下一�?�?
                 Navigation.MarkPot.Point_Order++;
@@ -426,27 +426,27 @@ void Get_Point(void)
     }
     //Balance_flash_read();
 }
-            
+
 
 /******************************************************
 ** Function: Oled_Display
 ** Description: OLED显示图像或者变�?
-** Others: 
+** Others:
 *******************************************************/
 void Oled_Display(void)                 //锟斤拷锟斤拷锟斤拷示
 {
     if(Oled_Model_Choose == 5)
     {
-        OLED_Show_float(0,0,IMUData.ax,4,1); 
+        OLED_Show_float(0,0,IMUData.ax,4,1);
         OLED_Show_float(0,1,IMUData.ay,4,1);
         OLED_Show_float(0,2,IMUData.az,4,1);
-        OLED_Show_float(0,3,IMUData.gx,2,1); 
+        OLED_Show_float(0,3,IMUData.gx,2,1);
         OLED_Show_float(0,4,IMUData.gy,2,1); OLED_Show_float(60,4,motor_value.receive_left_speed_data,4,1);
         OLED_Show_float(0,5,IMUData.gz,2,1); OLED_Show_float(60,5,motor_value.receive_right_speed_data,4,1);
     }
     else
     {
-        OLED_Show_float(0,0,IMUData.ax,4,1); 
+        OLED_Show_float(0,0,IMUData.ax,4,1);
         OLED_Show_float(0,1,IMUData.ay,4,1);
         OLED_Show_float(0,2,IMUData.az,4,1); OLED_Show_float(60,2,hCtrl.Pitch.ExpectSpeed_Exp,4,1);
         OLED_Show_float(0,3,IMUData.gx,2,1); OLED_Show_float(60,3,Now_Dot,4,1);
@@ -458,7 +458,7 @@ void Oled_Display(void)                 //锟斤拷锟斤拷锟斤拷示
 /******************************************************
 ** Function: casex_Read
 ** Description: 读取对应case�?的变�?
-** Others: 
+** Others:
 *******************************************************/
 void Run_flash_read(void)
 {
@@ -470,7 +470,7 @@ void Run_flash_read(void)
     flash_read_page(0, case2_Temp++, &Run_SET[arr_Temp++], 1);
     flash_read_page(0, case2_Temp++, &Run_SET[arr_Temp++], 1);
     flash_read_page(0, case2_Temp++, &Run_SET[arr_Temp++], 1);
-    
+
     arr_Temp = 0;
     hCtrl.Pitch.ExpectSpeed_Exp = Run_SET[arr_Temp++];
 }
@@ -489,7 +489,7 @@ void Balance_flash_read(void)
     flash_read_page(0, case4_Temp  , &Balance_PID[arr_Temp]  , 1);
 
     arr_Temp = 0;
-    
+
     PID_PitchOmega.kp = Balance_PID[arr_Temp++] * 1;
     PID_PitchOmega.ki = Balance_PID[arr_Temp++] * 1;
     PID_PitchOmega.kd = Balance_PID[arr_Temp++] * 1;
@@ -510,7 +510,9 @@ void Control_flash_read(void)
     flash_read_page(0, case5_Temp++, &Control_SET[arr_Temp++], 1);
     flash_read_page(0, case5_Temp++, &Control_SET[arr_Temp++], 1);
     flash_read_page(0, case5_Temp++, &Control_SET[arr_Temp++], 1);
-   
+    flash_read_page(0, case5_Temp++, &Control_SET[arr_Temp++], 1);
+    flash_read_page(0, case5_Temp++, &Control_SET[arr_Temp++], 1);
+
     arr_Temp = 0;
 
     hCtrl.Pitch.BalanceSign  = Control_SET[arr_Temp++] * 1;
@@ -535,19 +537,19 @@ void Set_flash_read(void)
         flash_read_page(0, case_Temp++, &Set_Y_Row[i], 1);
         Set_Guidance_Y[i] = Set_Y_Row[i] * 0.01f * (Set_Sign_Y[i] == 0 ? (1):(-1));
     }
-    
+
     case_Temp = 72;
     flash_read_page(0, case_Temp, &All_Dot, 1);
-    
+
     //Set_Sign is configured in case 3 (flash 16..23), not in XY storage area.
     case_Temp = 16;
     for(int i = 0; i < 8; i++)
     {
         flash_read_page(0, case_Temp + i, &Set_Sign[i], 1);
     }
-    
+
 }
-      
+
 void GPS_flash_read(void)
 {
 

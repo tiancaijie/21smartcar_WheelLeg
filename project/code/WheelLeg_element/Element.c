@@ -135,7 +135,7 @@ void Stand(void)
 }
 
 //void Reset_StartPot(void)
-//{ 
+//{
 //    if(Last_GPS_State != gps_state && State_get_count < 5)
 //    {
 //        Last_GPS_State = gps_state;
@@ -163,7 +163,7 @@ void Stand(void)
 //}
 
 void Reset_StartPot(void)
-{ 
+{
     if(Run_GPS)
     {
         if(Last_GPS_State != gps_state && State_get_count < 5)
@@ -204,7 +204,7 @@ void Angle_Setting(void)
 {
     // if(Set_Sign[7] == 2)// && ABS(Expect_Angle - IMUData.sum_yaw_mahony) < 0.5)
     // {
-    //     Expect_Angle = Set_Angle[Now_Dot] + 720 * Now_Dot * (Set_Angle[Now_Dot] == 0 ? (1) : (-1)); 
+    //     Expect_Angle = Set_Angle[Now_Dot] + 720 * Now_Dot * (Set_Angle[Now_Dot] == 0 ? (1) : (-1));
     // }
     // else if(Set_Sign[7] != 2)
     // {
@@ -216,11 +216,19 @@ void Angle_Setting(void)
 
 void Speed_Set(void)
 {
-
-    if(Distance < 0.1)
+    if(Distance < 0.2 && fabsf(hCtrl.Pitch.ExpectSpeed_Act) > 550)
     {
         hCtrl.Pitch.ExpectSpeed_Act = 0;
         Now_Dot_Flag++;
+    }
+    else if(Distance < 0.1)
+    {
+        hCtrl.Pitch.ExpectSpeed_Act = 0;
+        Now_Dot_Flag++;
+    }
+    else if(Distance < 2.0 && fabsf(hCtrl.Pitch.ExpectSpeed_Act) > 550)
+    {
+        hCtrl.Pitch.ExpectSpeed_Act =  Distance / 2 * hCtrl.Pitch.ExpectSpeed_Exp;
     }
     else if(Distance < 1.0)
     {
@@ -230,7 +238,7 @@ void Speed_Set(void)
     {
         hCtrl.Pitch.ExpectSpeed_Act = hCtrl.Pitch.ExpectSpeed_Exp;
     }
-    
+
 }
 
 void P_to_P(void)
@@ -260,7 +268,7 @@ void P_to_P(void)
 }
 
 void Run_Start(void)
-{   
+{
     static uint8 Segment_Run_Enabled = 0;
     float yaw_err = 0;
 
@@ -281,7 +289,7 @@ void Run_Start(void)
         P_to_P();
         yaw_err = Expect_Angle + IMUData.sum_yaw_mahony;
 
-        
+
         if(Segment_Run_Enabled == 0)
         {
             if(ABS(yaw_err) < 0.5)

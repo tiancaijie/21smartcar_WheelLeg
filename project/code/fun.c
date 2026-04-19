@@ -301,8 +301,8 @@ void VOFA_ParameterSent(uart_index_enum uart_n)
     SendValue[5].floatValue = (float)gx_last;
     SendValue[6].floatValue = (float)hCtrl.Pitch.ExpectOmega;
     SendValue[7].floatValue = (float)Expect_Angle;
-    SendValue[8].floatValue = (float)Now_Dot;
-    SendValue[9].floatValue = (float)All_Dot;
+    SendValue[8].floatValue = (float)LegOutput;
+    SendValue[9].floatValue = (float)hCtrl.Pitch.LegOutput;
     SendValue[10].floatValue = (float)INSData.Position_y;
     SendValue[11].floatValue = (float)INSData.Position_x;
 

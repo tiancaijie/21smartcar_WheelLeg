@@ -7,11 +7,11 @@
 
 #ifndef CODE_CONTROL_H_
 #define CODE_CONTROL_H_
-   
+
 #include "pid.h"
 #include "zf_common_headfile.h"
 #include "Element.h"
-   
+
 #define N 3
 extern float IMU_ax_output_a[N];
 extern int Center_deviation2[5];
@@ -161,6 +161,7 @@ extern float Swerve_Step;
 extern float Final_Speed;
 extern float ay_last;
 extern float gx_last;
+extern float LegOutput;
 extern int Slow_Flag;
 extern float Hill_Height;
 float DirectionControl(int EleMode, int NewError);

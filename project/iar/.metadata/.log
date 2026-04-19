@@ -196,3 +196,18 @@ org.eclipse.swt.SWTException: Widget is disposed
 	at org.eclipse.equinox.launcher.Main.invokeFramework(Main.java:659)
 	at org.eclipse.equinox.launcher.Main.basicRun(Main.java:596)
 	at org.eclipse.equinox.launcher.Main.run(Main.java:1467)
+!SESSION 2026-04-18 10:34:10.062 -----------------------------------------------
+eclipse.buildId=unknown
+java.version=11.0.16.1
+java.vendor=Eclipse Adoptium
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=zh_CN
+Command-line arguments:  -os win32 -ws win32 -arch x86_64 -data C:\Users\xsj20\21smartcar_WheelLeg\project\iar
+
+!ENTRY com.iar.cdt.arm.toolchain.cmsis.adapter 1 0 2026-04-18 10:34:18.322
+!MESSAGE Using CMSIS pack repositories: http://links.iar.com/cmsis/pack/
+
+!ENTRY com.iar.cmsismanager.product 1 0 2026-04-18 10:34:19.636
+!MESSAGE CMSIS Agent interface registered with service registry at ServiceLocation(host:\\.\pipe\iar-cspy-cpp-binary-com.iar.thrift.service.registry-b03a69a4-924b-4e7e-912c-b844b112bdbc-1, port:0, protocol:Binary, transport:Pipe)
+
+!ENTRY org.eclipse.core.jobs 2 2 2026-04-18 10:34:53.481
+!MESSAGE Job found still running after platform shutdown.  Jobs should be canceled by the plugin that scheduled them during shutdown: com.arm.cmsis.pack.installer.jobs.CpUpdatePacksJob
