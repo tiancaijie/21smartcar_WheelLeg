@@ -1,13 +1,13 @@
 <?xml version="1.0"?>
 <settings>
     <Jet>
-        <PrevWtdReset>Reset and halt after bootloader</PrevWtdReset>
-        <OnlineReset>Software</OnlineReset>
         <JetConnSerialNo>CMSIS-DAP v2:000100011A5A5BB60000000000051BC7A5A5A5A597969908</JetConnSerialNo>
         <JetConnFoundProbes>CMSIS-DAP v1:000100011a5a5bb60000000000051bc7a5a5a5a597969908:CMSIS-DAP v2:000100011A5A5BB60000000000051BC7A5A5A5A597969908:</JetConnFoundProbes>
+        <PrevWtdReset>Reset and halt after bootloader</PrevWtdReset>
         <DisableInterrupts>0</DisableInterrupts>
         <LeaveRunning>0</LeaveRunning>
         <MultiCoreRunAll>0</MultiCoreRunAll>
+        <OnlineReset>Software</OnlineReset>
     </Jet>
     <Stack>
         <FillEnabled>0</FillEnabled>
@@ -22,7 +22,7 @@
     </Stack>
     <PlDriver>
         <FirstRun>0</FirstRun>
-        <MemConfigValue>D:\IAR\IAR\arm\config\debugger\Infineon\CYT4BB_M7.ddf</MemConfigValue>
+        <MemConfigValue>d:\IAR\IAR\arm\config\debugger\Infineon\CYT4BB_M7.ddf</MemConfigValue>
     </PlDriver>
     <ArmDriver>
         <EnableCache>1</EnableCache>
@@ -35,8 +35,8 @@
     <SWOManager>
         <SamplingDivider>8192</SamplingDivider>
         <OverrideClock>0</OverrideClock>
-        <CpuClock>172052037</CpuClock>
-        <SwoClock>1684104530</SwoClock>
+        <CpuClock>1953721961</CpuClock>
+        <SwoClock>1376416626</SwoClock>
         <DataLogMode>0</DataLogMode>
         <ItmPortsEnabled>63</ItmPortsEnabled>
         <ItmTermIOPorts>1</ItmTermIOPorts>
@@ -46,7 +46,7 @@
         <PowerConnectPC>1</PowerConnectPC>
     </SWOManager>
     <DebugChecksum>
-        <Checksum>1155500950</Checksum>
+        <Checksum>2643200455</Checksum>
     </DebugChecksum>
     <Disassembly>
         <MixedMode>1</MixedMode>
@@ -58,6 +58,13 @@
         <Show>1 1</Show>
         <Sort>4 0</Sort>
     </SfrWindow>
+    <TermIOLog>
+        <LoggingEnabled>_ 0</LoggingEnabled>
+        <LogFile>_ ""</LogFile>
+    </TermIOLog>
+    <DisassembleMode>
+        <mode>0</mode>
+    </DisassembleMode>
     <watch_formats>
         <Fmt0>{W}42:IMUData.pitch_mahony	0	10</Fmt0>
     </watch_formats>
@@ -91,19 +98,11 @@
         <EventLSU>0</EventLSU>
         <EventSLEEP>0</EventSLEEP>
     </SWOTraceWindow>
-    <DisassembleMode>
-        <mode>0</mode>
-    </DisassembleMode>
-    <Breakpoints2>
-        <Bp0>_ 0 "EMUL_CODE" "0x1008'b570" 0 0 1 "" 0 "" 0</Bp0>
-        <Count>1</Count>
-    </Breakpoints2>
-    <TermIOLog>
-        <LoggingEnabled>_ 0</LoggingEnabled>
-        <LogFile>_ ""</LogFile>
-    </TermIOLog>
     <Aliases>
         <Count>0</Count>
         <SuppressDialog>0</SuppressDialog>
     </Aliases>
+    <Breakpoints2>
+        <Count>0</Count>
+    </Breakpoints2>
 </settings>

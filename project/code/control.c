@@ -251,10 +251,41 @@ void FiveLink_Opposite(VMC_Data_Type* leg, float LXc, float Yc)//五连杆运动
 
 void PWM_Output(VMC_Data_Type* leg1,VMC_Data_Type* leg2)
 {
+  if (Jump_Flag == 1)
+  {
+    leg1->PWM_Out1 =  (int)(LeftF_CENTER  + Extend_Height);  //(1000/PI*leg1->Theta1*6 + LeftF_CENTER);
+    leg1->PWM_Out2 =  (int)(LeftB_CENTER  - Extend_Height);  //(1000/PI*leg1->Theta2*6 + LeftB_CENTER);
+    leg2->PWM_Out1 =  (int)(RightF_CENTER - Extend_Height); //(1000/PI*leg2->Theta1*6 + RightF_CENTER);
+    leg2->PWM_Out2 =  (int)(RightB_CENTER + Extend_Height); //(1000/PI*leg2->Theta2*6 + RightB_CENTER);
+  }
+    else if (Jump_Flag == 2)
+  {
+    leg1->PWM_Out1 =  (int)(LeftF_CENTER);  //(1000/PI*leg1->Theta1*6 + LeftF_CENTER);
+    leg1->PWM_Out2 =  (int)(LeftB_CENTER);  //(1000/PI*leg1->Theta2*6 + LeftB_CENTER);
+    leg2->PWM_Out1 =  (int)(RightF_CENTER); //(1000/PI*leg2->Theta1*6 + RightF_CENTER);
+    leg2->PWM_Out2 =  (int)(RightB_CENTER); //(1000/PI*leg2->Theta2*6 + RightB_CENTER);
+  }
+    else if (Jump_Flag == 3)
+  {
+    leg1->PWM_Out1 =  (int)(LeftF_CENTER  + Cushion_Height);  //(1000/PI*leg1->Theta1*6 + LeftF_CENTER);
+    leg1->PWM_Out2 =  (int)(LeftB_CENTER  - Cushion_Height);  //(1000/PI*leg1->Theta2*6 + LeftB_CENTER);
+    leg2->PWM_Out1 =  (int)(RightF_CENTER - Cushion_Height); //(1000/PI*leg2->Theta1*6 + RightF_CENTER);
+    leg2->PWM_Out2 =  (int)(RightB_CENTER + Cushion_Height); //(1000/PI*leg2->Theta2*6 + RightB_CENTER);
+  }
+    else if (Jump_Flag == 4)
+  {
+    leg1->PWM_Out1 =  (int)(LeftF_CENTER  + Cushion_Speed);  //(1000/PI*leg1->Theta1*6 + LeftF_CENTER);
+    leg1->PWM_Out2 =  (int)(LeftB_CENTER  - Cushion_Speed);  //(1000/PI*leg1->Theta2*6 + LeftB_CENTER);
+    leg2->PWM_Out1 =  (int)(RightF_CENTER - Cushion_Speed); //(1000/PI*leg2->Theta1*6 + RightF_CENTER);
+    leg2->PWM_Out2 =  (int)(RightB_CENTER + Cushion_Speed); //(1000/PI*leg2->Theta2*6 + RightB_CENTER);
+  }
+    else if (Jump_Flag == 0)
+  {
     leg1->PWM_Out1 =  (int)(LeftF_CENTER  - hCtrl.Pitch.LegOutput);  //(1000/PI*leg1->Theta1*6 + LeftF_CENTER);
     leg1->PWM_Out2 =  (int)(LeftB_CENTER  - hCtrl.Pitch.LegOutput);  //(1000/PI*leg1->Theta2*6 + LeftB_CENTER);
     leg2->PWM_Out1 =  (int)(RightF_CENTER + hCtrl.Pitch.LegOutput); //(1000/PI*leg2->Theta1*6 + RightF_CENTER);
     leg2->PWM_Out2 =  (int)(RightB_CENTER + hCtrl.Pitch.LegOutput); //(1000/PI*leg2->Theta2*6 + RightB_CENTER);
+  }
 
     pwm_set_duty(Left_FLeg_PWM1, leg1->PWM_Out1);  //左
     pwm_set_duty(Left_BLeg_PWM2, leg1->PWM_Out2);
@@ -377,14 +408,25 @@ float Final_Speed = 0;
 void Speed_Output(void)
 {
     int32 liSpeedPwm_L,liSpeedPwm_R;
-    liSpeedPwm_L =(int)((hCtrl.Pitch.Output - hCtrl.Yaw.Output)/(JumpOff + 1));
-    liSpeedPwm_R =(int)((hCtrl.Pitch.Output + hCtrl.Yaw.Output)/(JumpOff + 1));
+    if (Jump_Flag == 0)
+    {
+        liSpeedPwm_L =(int)(hCtrl.Pitch.Output - hCtrl.Yaw.Output);
+        liSpeedPwm_R =(int)(hCtrl.Pitch.Output + hCtrl.Yaw.Output);
+    }
+    else
+    {
+        liSpeedPwm_L =(int)((hCtrl.Pitch.Output- hCtrl.Yaw.Output)/2);
+        liSpeedPwm_R =(int)((hCtrl.Pitch.Output+ hCtrl.Yaw.Output)/2);
+    }
+//     liSpeedPwm_L =(int)((hCtrl.Pitch.Output - hCtrl.Yaw.Output)/(JumpOff + 1));
+//     liSpeedPwm_R =(int)((hCtrl.Pitch.Output + hCtrl.Yaw.Output)/(JumpOff + 1));
     liSpeedPwm_L = Amplitude_Limit(liSpeedPwm_L, -9000, 9000);
     liSpeedPwm_R = Amplitude_Limit(liSpeedPwm_R, -9000, 9000);
     if(Switch_On)
     {
         FOC_SendControl(Set_Speed , liSpeedPwm_L , -liSpeedPwm_R);
     }
+
     else
     {
         Run_Delay = 0;
@@ -394,7 +436,7 @@ void Speed_Output(void)
 
 void SAFE_PROTECT(void)
 {
-    if(ABS(motor_value.receive_left_speed_data) > 10000 || ABS(motor_value.receive_right_speed_data > 10000))
+    if(ABS(motor_value.receive_left_speed_data) > 10000 || ABS(motor_value.receive_right_speed_data) > 10000)
     {
         PID_cleardata(&PID_PitchOmega);
         PID_cleardata(&PID_YawOmega);
@@ -403,7 +445,7 @@ void SAFE_PROTECT(void)
 
 void Remote_Conctol (void)
 {
-    if(uart_receiver.channel[3] == 1792)                                               //4通道保护（是否打点）
+    if(uart_receiver.channel[3] == 1792)                                             //4通道保护（是否打点）
     {
         Expect_Angle += (uart_receiver.channel[0] - 992) * 0.01 ;                    //1通道方向
         hCtrl.Pitch.ExpectSpeed_Act = (uart_receiver.channel[1] - 992) * 1 ;         //2通道油门

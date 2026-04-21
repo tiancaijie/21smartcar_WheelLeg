@@ -60,49 +60,57 @@ void Single_BridgeStateCTRL(void)
 
 int JumpTimeCount = 0;
 int JumpOff = 0;
+int Jump_Finish_Flag = 0;
 uint16 Extend_time = 80;
 uint16 Shrink_time = 200;
 uint16 Cushion_time = 240;
 uint16 Over_time = 320;
-float Extend_Height = 0.130;
+float Extend_Height = 2600;
 float Shrink_Height = 0.075;
-float Cushion_Height = 0.110;
-float Cushion_Speed  = 0.00025;
+float Cushion_Height = 1000;
+float Cushion_Speed  = 0;
 void JumpCTRL(void)
 {
     JumpTimeCount+=2;
     if (Extend_time >= JumpTimeCount)
     {
-        L_Height = Extend_Height;
-        R_Height = Extend_Height;
+        //L_Height = Extend_Height;
+       // R_Height = Extend_Height;
+      Jump_Flag = 1;
     }
     else if (Shrink_time >= JumpTimeCount && JumpTimeCount > Extend_time)
     {
-        L_Height = Shrink_Height;
-        R_Height = Shrink_Height;
-        RXc[0] = LXc[0] = 0.03;
+        //L_Height = Shrink_Height;
+        //R_Height = Shrink_Height;
+       // RXc[0] = LXc[0] = 0.03;
         JumpOff = 1;
+        Jump_Flag = 2;
     }
     else if (JumpTimeCount > Shrink_time && JumpTimeCount <= Cushion_time)
     {
-        L_Height = Cushion_Height;
-        R_Height = Cushion_Height;
-        RXc[0] = LXc[0] = 0.03;
+       // L_Height = Cushion_Height;
+       // R_Height = Cushion_Height;
+       // RXc[0] = LXc[0] = 0.03;
+      Jump_Flag = 3;
     }
     else if (JumpTimeCount > Cushion_time && JumpTimeCount <= Over_time)
     {
 
-        L_Height -= (Cushion_Height - Height_Init)/(Over_time - Cushion_time);
-        R_Height -= (Cushion_Height - Height_Init)/(Over_time - Cushion_time);
-        RXc[0] = LXc[0] = 0.02;
+       // L_Height -= (Cushion_Height - Height_Init)/(Over_time - Cushion_time);
+       // R_Height -= (Cushion_Height - Height_Init)/(Over_time - Cushion_time);
+       // RXc[0] = LXc[0] = 0.02;
+
+      Cushion_Speed += Cushion_Height/(Over_time - Cushion_time);
+      Jump_Flag = 4;
     }
     else if(JumpTimeCount >= Over_time)
     {
         JumpTimeCount = 0;
         Jump_Flag = 0;
         JumpOff = 0;
-        L_Height = Height_Init;
-        R_Height = Height_Init;
+        Jump_Finish_Flag = 1;
+//        L_Height = Height_Init;
+//        R_Height = Height_Init;
     }
 }
 
@@ -309,26 +317,6 @@ void Run_Start(void)
     }
     if(Now_Dot_Flag == 3 && Now_Dot < All_Dot)
     {
-//        if(Set_Sign[7] == 2)
-//        {
-//            //先完成原地转圈，再执行下面的重置与换点
-//            if(Spin_State == 0)
-//            {
-//                // 以当前航向为基准，再转两圈（720 度）
-//                Expect_Angle = -IMUData.sum_yaw_mahony - 720.0f;
-//                Spin_State   = 1;
-//            }
-//
-//            // 转圈还没完成：直接返回，本周期不执行下面的重置和换点
-//            if(ABS(Expect_Angle + IMUData.sum_yaw_mahony) > 0.5f)
-//            {
-//                hCtrl.Pitch.ExpectSpeed_Act = 0;
-//                return;
-//            }
-//
-//            // 转圈完成，恢复状态，允许执行下面的重置逻辑
-//            Spin_State = 2;
-//        }
         Now_Dot_Flag = 0;
         State_get_count = 0;
         Start_Latitude = 0;

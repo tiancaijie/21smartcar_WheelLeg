@@ -1,0 +1,25 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "cspy",
+            "request": "launch",
+            "name": "Debug the active IAR Project",
+            "workbenchPath": "${command:iar-config.toolchain}",
+            "projectPath": "${command:iar-config.project-file}",
+            "projectConfiguration": "${command:iar-config.project-configuration}",
+            "buildBeforeDebugging": "AskOnFailure"
+        },
+        {
+            "type": "cspy",
+            "request": "launch",
+            "name": "Download Only (No Debug)",
+            "workbenchPath": "${command:iar-config.toolchain}",
+            "projectPath": "${command:iar-config.project-file}",
+            "projectConfiguration": "${command:iar-config.project-configuration}",
+            "buildBeforeDebugging": "AskOnFailure",
+            "noDebug": true,
+            "runToMain": false
+        }
+    ]
+}
