@@ -33,8 +33,8 @@
 
 //-----Leg-----
 #define LeftF_CENTER                   770*6 - 100 * 9//823
-#define LeftB_CENTER                   770*6//823
-#define RightF_CENTER                  710*6//823
+#define LeftB_CENTER                   750*6//823
+#define RightF_CENTER                  750*6//823
 #define RightB_CENTER                  750*6//823
 
 #define LeftF_minimum                   LeftF_CENTER - 485//(LeftF_CENTER-500)*6//823
@@ -48,8 +48,8 @@
 #define RightB_maximum                  RightB_CENTER + 485//(RightB_CENTER+500)*6
 
 #define LeftF_Init                      770*6 - 100 * 9//(LeftF_CENTER+500)*6   //90
-#define LeftB_Init                      770*6//(LeftB_CENTER-500)*6
-#define RightF_Init                     710*6//(RightF_CENTER-500)*6
+#define LeftB_Init                      750*6//(LeftB_CENTER-500)*6
+#define RightF_Init                     750*6//(RightF_CENTER-500)*6
 #define RightB_Init                     750*6//(RightB_CENTER+500)*6
 
 

@@ -94,27 +94,27 @@ PID_InitTypeDef   PID_YawOmega_init=
     .outMax  = 7000,
 };
 
-PID_HandleTypeDef PID_RowAngle;
-PID_InitTypeDef   PID_RowAngle_init=
+PID_HandleTypeDef PID_RollAngle;
+PID_InitTypeDef   PID_RollAngle_init=
 {
-    .name = "Row_Omega",
+    .name = "Roll_Angle",
     .index = 7,
     .mode = PID_MODE_ADD,
-    .kp = 0.050,
+    .kp = 100.0,
     .factor_kp = 1.0,
     .ki = 0.000,
     .factor_ki = 1.0,
     .kd = 0.95,
     .factor_kd = 1.0,
     .iOutMax = 0.01,
-    .outMax  = 0.03,
+    .outMax  = 2000,
 };
 
 
 PID_HandleTypeDef PID_SwerveAngle;
 PID_InitTypeDef   PID_SwerveAngle_init=
 {
-    .name = "Row_Angle",
+    .name = "Roll_Angle",
     .index = 7,
     .mode = PID_MODE_POSITION,
     .kp = 0.085,
@@ -135,9 +135,8 @@ void PID_InitAll(void)
     PID_init(&PID_PitchLeg, &PID_PitchLeg_init);
     PID_init(&PID_PitchOmega, &PID_PitchOmega_init);
     PID_init(&PID_PitchAngle, &PID_PitchAngle_init);
-    PID_init(&PID_RowAngle, &PID_RowAngle_init);
+    PID_init(&PID_RollAngle, &PID_RollAngle_init);
     PID_init(&PID_SwerveAngle, &PID_SwerveAngle_init);
-    PID_init(&PID_RowAngle, &PID_RowAngle_init);
     PID_init(&PID_YawOmega, &PID_YawOmega_init);
     PID_init(&PID_YawAngle, &PID_YawAngle_init);
 }
@@ -220,6 +219,8 @@ void Angle_cal(void)
 
     IMUData.sum_yaw_mahony = (float)IMUData.yaw_mahony_turns*2*PI + IMUData.yaw_trans;
     IMUData.sum_yaw_mahony = Rad2Deg(IMUData.sum_yaw_mahony);
+
+    IMUData.roll_mahony = IMUData.roll_mahony - hCtrl.Roll.BalancePoint;
 }
 
 float L1 = 0.037;  //cm
@@ -251,41 +252,56 @@ void FiveLink_Opposite(VMC_Data_Type* leg, float LXc, float Yc)//五连杆运动
 
 void PWM_Output(VMC_Data_Type* leg1,VMC_Data_Type* leg2)
 {
-  if (Jump_Flag == 1)
-  {
-    leg1->PWM_Out1 =  (int)(LeftF_CENTER  + Extend_Height);  //(1000/PI*leg1->Theta1*6 + LeftF_CENTER);
-    leg1->PWM_Out2 =  (int)(LeftB_CENTER  - Extend_Height);  //(1000/PI*leg1->Theta2*6 + LeftB_CENTER);
-    leg2->PWM_Out1 =  (int)(RightF_CENTER - Extend_Height); //(1000/PI*leg2->Theta1*6 + RightF_CENTER);
-    leg2->PWM_Out2 =  (int)(RightB_CENTER + Extend_Height); //(1000/PI*leg2->Theta2*6 + RightB_CENTER);
-  }
-    else if (Jump_Flag == 2)
-  {
-    leg1->PWM_Out1 =  (int)(LeftF_CENTER);  //(1000/PI*leg1->Theta1*6 + LeftF_CENTER);
-    leg1->PWM_Out2 =  (int)(LeftB_CENTER);  //(1000/PI*leg1->Theta2*6 + LeftB_CENTER);
-    leg2->PWM_Out1 =  (int)(RightF_CENTER); //(1000/PI*leg2->Theta1*6 + RightF_CENTER);
-    leg2->PWM_Out2 =  (int)(RightB_CENTER); //(1000/PI*leg2->Theta2*6 + RightB_CENTER);
-  }
-    else if (Jump_Flag == 3)
-  {
-    leg1->PWM_Out1 =  (int)(LeftF_CENTER  + Cushion_Height);  //(1000/PI*leg1->Theta1*6 + LeftF_CENTER);
-    leg1->PWM_Out2 =  (int)(LeftB_CENTER  - Cushion_Height);  //(1000/PI*leg1->Theta2*6 + LeftB_CENTER);
-    leg2->PWM_Out1 =  (int)(RightF_CENTER - Cushion_Height); //(1000/PI*leg2->Theta1*6 + RightF_CENTER);
-    leg2->PWM_Out2 =  (int)(RightB_CENTER + Cushion_Height); //(1000/PI*leg2->Theta2*6 + RightB_CENTER);
-  }
-    else if (Jump_Flag == 4)
-  {
-    leg1->PWM_Out1 =  (int)(LeftF_CENTER  + Cushion_Speed);  //(1000/PI*leg1->Theta1*6 + LeftF_CENTER);
-    leg1->PWM_Out2 =  (int)(LeftB_CENTER  - Cushion_Speed);  //(1000/PI*leg1->Theta2*6 + LeftB_CENTER);
-    leg2->PWM_Out1 =  (int)(RightF_CENTER - Cushion_Speed); //(1000/PI*leg2->Theta1*6 + RightF_CENTER);
-    leg2->PWM_Out2 =  (int)(RightB_CENTER + Cushion_Speed); //(1000/PI*leg2->Theta2*6 + RightB_CENTER);
-  }
-    else if (Jump_Flag == 0)
-  {
-    leg1->PWM_Out1 =  (int)(LeftF_CENTER  - hCtrl.Pitch.LegOutput);  //(1000/PI*leg1->Theta1*6 + LeftF_CENTER);
-    leg1->PWM_Out2 =  (int)(LeftB_CENTER  - hCtrl.Pitch.LegOutput);  //(1000/PI*leg1->Theta2*6 + LeftB_CENTER);
-    leg2->PWM_Out1 =  (int)(RightF_CENTER + hCtrl.Pitch.LegOutput); //(1000/PI*leg2->Theta1*6 + RightF_CENTER);
-    leg2->PWM_Out2 =  (int)(RightB_CENTER + hCtrl.Pitch.LegOutput); //(1000/PI*leg2->Theta2*6 + RightB_CENTER);
-  }
+    if (Jump_Flag == 1)
+    {
+        leg1->PWM_Out1 =  (int)(LeftF_CENTER  + Extend_Height);  //(1000/PI*leg1->Theta1*6 + LeftF_CENTER);
+        leg1->PWM_Out2 =  (int)(LeftB_CENTER  - Extend_Height);  //(1000/PI*leg1->Theta2*6 + LeftB_CENTER);
+        leg2->PWM_Out1 =  (int)(RightF_CENTER - Extend_Height); //(1000/PI*leg2->Theta1*6 + RightF_CENTER);
+        leg2->PWM_Out2 =  (int)(RightB_CENTER + Extend_Height); //(1000/PI*leg2->Theta2*6 + RightB_CENTER);
+    }
+        else if (Jump_Flag == 2)
+    {
+        leg1->PWM_Out1 =  (int)(LeftF_CENTER);  //(1000/PI*leg1->Theta1*6 + LeftF_CENTER);
+        leg1->PWM_Out2 =  (int)(LeftB_CENTER);  //(1000/PI*leg1->Theta2*6 + LeftB_CENTER);
+        leg2->PWM_Out1 =  (int)(RightF_CENTER); //(1000/PI*leg2->Theta1*6 + RightF_CENTER);
+        leg2->PWM_Out2 =  (int)(RightB_CENTER); //(1000/PI*leg2->Theta2*6 + RightB_CENTER);
+    }
+        else if (Jump_Flag == 3)
+    {
+        leg1->PWM_Out1 =  (int)(LeftF_CENTER  + Cushion_Height);  //(1000/PI*leg1->Theta1*6 + LeftF_CENTER);
+        leg1->PWM_Out2 =  (int)(LeftB_CENTER  - Cushion_Height);  //(1000/PI*leg1->Theta2*6 + LeftB_CENTER);
+        leg2->PWM_Out1 =  (int)(RightF_CENTER - Cushion_Height); //(1000/PI*leg2->Theta1*6 + RightF_CENTER);
+        leg2->PWM_Out2 =  (int)(RightB_CENTER + Cushion_Height); //(1000/PI*leg2->Theta2*6 + RightB_CENTER);
+    }
+        else if (Jump_Flag == 4)
+    {
+        leg1->PWM_Out1 =  (int)(LeftF_CENTER  + Cushion_Speed);  //(1000/PI*leg1->Theta1*6 + LeftF_CENTER);
+        leg1->PWM_Out2 =  (int)(LeftB_CENTER  - Cushion_Speed);  //(1000/PI*leg1->Theta2*6 + LeftB_CENTER);
+        leg2->PWM_Out1 =  (int)(RightF_CENTER - Cushion_Speed); //(1000/PI*leg2->Theta1*6 + RightF_CENTER);
+        leg2->PWM_Out2 =  (int)(RightB_CENTER + Cushion_Speed); //(1000/PI*leg2->Theta2*6 + RightB_CENTER);
+    }
+        else if (Jump_Flag == 0)
+    {
+        if (hCtrl.Roll.Output > 0)              //左倾
+        {
+            leg1->PWM_Out1 =  (int)(LeftF_CENTER  - hCtrl.Pitch.LegOutput + fabsf(hCtrl.Roll.Output));  //(1000/PI*leg1->Theta1*6 + LeftF_CENTER);
+            leg1->PWM_Out2 =  (int)(LeftB_CENTER  - hCtrl.Pitch.LegOutput - fabsf(hCtrl.Roll.Output));  //(1000/PI*leg1->Theta2*6 + LeftB_CENTER);
+            leg2->PWM_Out1 =  (int)(RightF_CENTER + hCtrl.Pitch.LegOutput); //(1000/PI*leg2->Theta1*6 + RightF_CENTER);
+            leg2->PWM_Out2 =  (int)(RightB_CENTER + hCtrl.Pitch.LegOutput); //(1000/PI*leg2->Theta2*6 + RightB_CENTER);
+        }
+        else                                    //右倾
+        {
+            leg1->PWM_Out1 =  (int)(LeftF_CENTER  - hCtrl.Pitch.LegOutput);  //(1000/PI*leg1->Theta1*6 + LeftF_CENTER);
+            leg1->PWM_Out2 =  (int)(LeftB_CENTER  - hCtrl.Pitch.LegOutput);  //(1000/PI*leg1->Theta2*6 + LeftB_CENTER);
+            leg2->PWM_Out1 =  (int)(RightF_CENTER + hCtrl.Pitch.LegOutput - fabsf(hCtrl.Roll.Output)); //(1000/PI*leg2->Theta1*6 + RightF_CENTER);
+            leg2->PWM_Out2 =  (int)(RightB_CENTER + hCtrl.Pitch.LegOutput + fabsf(hCtrl.Roll.Output)); //(1000/PI*leg2->Theta2*6 + RightB_CENTER);
+        }
+    }
+
+    leg1->PWM_Out1 = Amplitude_Limit(leg1->PWM_Out1, 2220, 6400);
+    leg1->PWM_Out2 = Amplitude_Limit(leg1->PWM_Out2, 1900, 6000);
+    leg2->PWM_Out1 = Amplitude_Limit(leg2->PWM_Out1, 1900, 6000);
+    leg2->PWM_Out2 = Amplitude_Limit(leg2->PWM_Out2, 3000, 7100);
 
     pwm_set_duty(Left_FLeg_PWM1, leg1->PWM_Out1);  //左
     pwm_set_duty(Left_BLeg_PWM2, leg1->PWM_Out2);
@@ -374,6 +390,12 @@ void YawAngleCtrl(void)
     uart_receiver_data[0] = 0;
     hCtrl.Yaw.ExpectOmega_Exp = PID_calc(&PID_YawAngle,Expect_Angle,-IMUData.sum_yaw_mahony);
 }
+
+void RollAngleCtrl(void)
+{
+    hCtrl.Roll.Output = PID_calc(&PID_RollAngle,0,IMUData.roll_mahony);
+}
+
 float Swerve_Offset[2] = {0};
 float IMU_ax_output_a[N] = {0};//Yaw角速度滤波
 float IMU_ax_input_a[N] = {0};

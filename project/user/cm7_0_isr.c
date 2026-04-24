@@ -50,7 +50,7 @@ float LXc[2] = {0};
 float RXc[2] = {0};
 double gnss_dot[2][11] = {0};
 int Jump_Flag = 0;
-
+uint16 JumpChannel_Last = 192;
 int Jump_TestTime = 0;
 int Last_rc_ctrl_s_record = 0;
 float Distance = 0;
@@ -83,6 +83,7 @@ void pit0_ch0_isr()                     // 定时器通道 0 周期中断服务函数
     if(hCtrl.Yaw.BalancePoint == 0 && Switch_On)
     {
         hCtrl.Yaw.BalancePoint = IMUData.yaw_mahony;
+        hCtrl.Roll.BalancePoint = IMUData.roll_mahony;
     }
 
     if (ms20 >= 10)           //20ms
@@ -105,7 +106,12 @@ void pit0_ch0_isr()                     // 定时器通道 0 周期中断服务函数
     
     YawOmegaCtrl();
     PitchOmegaCtrl();
-    if (uart_receiver.channel[3] == 1792 && uart_receiver.channel[5] == 1792 && Jump_Finish_Flag == 0)
+    if (Jump_Flag == 0)
+    {
+        RollAngleCtrl();
+    }
+    
+    if (uart_receiver.channel[3] == 1792 && Jump_Finish_Flag == 0 && uart_receiver.channel[5] == 1792)
     {
         JumpCTRL();
     }

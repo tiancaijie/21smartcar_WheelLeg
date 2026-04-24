@@ -28,6 +28,7 @@ extern float Set_Angle[8];
 extern double Set_Guidance_X[8];
 extern double Set_Guidance_Y[8];
 extern uint32 Set_Sign[8];
+extern uint32 Run_SET[8];
 extern double Set_X[20] ;
 extern double Set_Y[20] ;
 extern int Left_Target_Speed[2];

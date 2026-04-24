@@ -55,6 +55,7 @@ extern float Start_Direaction;
 extern float SpeedPWMOut_L;
 extern float SpeedPWMOut_R;
 extern int Jump_Flag;
+extern uint16 JumpChannel_Last;
 extern float LXc[2];
 extern float RXc[2];
 extern double gnss_dot[2][11];

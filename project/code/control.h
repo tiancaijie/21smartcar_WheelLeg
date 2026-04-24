@@ -143,6 +143,11 @@ typedef struct
         uint8  BalanceSign;
         float Output;
     }Yaw;
+    struct
+    {
+        float BalancePoint;
+        float Output;
+    }Roll;
 }CtrlHandle_TypeDef;
 
 typedef enum
@@ -179,6 +184,7 @@ void PitchOmegaCtrl(void);
 void PitchAngleCtrl(void);
 void YawOmegaCtrl(void);
 void YawAngleCtrl(void);
+void RollAngleCtrl(void);
 void Speed_Output(void);
 void Direction_Ctrl(void);
 void SAFE_PROTECT(void);

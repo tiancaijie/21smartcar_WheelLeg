@@ -4,8 +4,8 @@
 #include "MahonyAHRS.h"
 int giWheelSpeed_Old = 0,giLeftWheelSpeed_old = 0,giRightWheelSpeed_old = 0;
 int giWheelSpeed = 0,giRightWheelSpeed = 0,giLeftWheelSpeed = 0, SpeedMax, SpeedMid, SpeedMin;
-int SP_RightFiltering[2] = {0};             //历史值
-int SP_LeftFiltering[2] = {0};              //历史值
+int SP_RightFiltering[2] = {0};             //历史�??
+int SP_LeftFiltering[2] = {0};              //历史�??
 int Change[2];
 int SpeedHill, SpeedCircle;
 typedef union//������ת�����͹�����
@@ -49,15 +49,15 @@ void GetSpeed (void)
 /*************************************************
 Function: ClearArrayChar
 Description: 清空数据
-Calls: 无
+Calls: �??
 Called By: main.c
-Table Accessed: 无
-Table Updated: 无
+Table Accessed: �??
+Table Updated: �??
 Input: 需要清零的数组首地址
        需要清零的数组尾地址
-Output: 无
-Return: 无
-Others:无
+Output: �??
+Return: �??
+Others:�??
 *************************************************/
 void ClearArrayChar(unsigned char *PTemp, unsigned char *PEnd)
 {
@@ -104,8 +104,8 @@ void ClearArrayfloat(float *PTemp, float *PEnd)
 
 /**
 ** Function: m_sqrt
-** Description: 正数开根
-** Others:无
+** Description: 正数开�??
+** Others:�??
 **/
 unsigned int m_sqrt(unsigned int x)
 {
@@ -123,7 +123,7 @@ unsigned int m_sqrt(unsigned int x)
 }
 /************************************************
  * Function: Square
- * Description: 求数据平方
+ * Description: 求数�??平方
  * Calls: None
  * Input: arg
  * Return: arg * arg;
@@ -138,8 +138,8 @@ float Square_float(float arg)
 }
 /**
 ** Function: Linear_Interpolation
-** Description: 线性插值
-** Others:*Ptemp：数组的起始指针，End_Row：一共进行多少行
+** Description: 线性插�??
+** Others:*Ptemp：数组的起�?�指针，End_Row：一共进行�?�少�??
 **/
 void Linear_Interpolation(int *Ptemp,int End_Row)
 {
@@ -282,7 +282,7 @@ extern uint16 dl1b_distance_mm;
 extern int ISR_Time;
 extern PID_HandleTypeDef PID_PitchOmega;
 extern PID_HandleTypeDef PID_PitchAngle;
-extern PID_HandleTypeDef PID_RowAngle;
+extern PID_HandleTypeDef PID_RollAngle;
 extern float gz_last;
 extern int Jump_Row;
 extern float Swerve_P;
@@ -293,14 +293,14 @@ void VOFA_ParameterSent(uart_index_enum uart_n)
     uint8 i = 0;
     uint8 end[4] = {0x00, 0x00, 0x80, 0x7f};
 
-    SendValue[0].floatValue = (float)Now_Dot_Flag;
-    SendValue[1].floatValue = (float)uart_receiver.channel[0];
-    SendValue[2].floatValue = (float)uart_receiver.channel[1];
-    SendValue[3].floatValue = (float)uart_receiver.channel[2];
+    SendValue[0].floatValue = (float)Jump_Finish_Flag;
+    SendValue[1].floatValue = (float)Jump_Finish_Flag1;
+    SendValue[2].floatValue = (float)Jump_Flag;
+    SendValue[3].floatValue = (float)gx_last;
     SendValue[4].floatValue = (float)uart_receiver.channel[3];
-    SendValue[5].floatValue = (float)gx_last;
-    SendValue[6].floatValue = (float)hCtrl.Pitch.ExpectOmega;
-    SendValue[7].floatValue = (float)Expect_Angle;
+    SendValue[5].floatValue = (float)IMUData.roll_mahony;
+    SendValue[6].floatValue = (float)hCtrl.Roll.Output;
+    SendValue[7].floatValue = (float)hCtrl.Pitch.LegOutput;
     SendValue[8].floatValue = (float)LegOutput;
     SendValue[9].floatValue = (float)hCtrl.Pitch.LegOutput;
     SendValue[10].floatValue = (float)INSData.Position_y;
@@ -308,7 +308,7 @@ void VOFA_ParameterSent(uart_index_enum uart_n)
 
     for (i = 0; i < 12; i++)
     {
-        tmpu8[0] = SendValue[i].uint8Value[0];
+    tmpu8[0] = SendValue[i].uint8Value[0];
 	tmpu8[1] = SendValue[i].uint8Value[1];
 	tmpu8[2] = SendValue[i].uint8Value[2];
 	tmpu8[3] = SendValue[i].uint8Value[3];
@@ -333,7 +333,7 @@ void itoa(int32_t num, char* buffer) {
         n = (uint32_t)num;
     }
 
-    // 生成反向字符串
+    // 生成反向字�?�串
     do {
         *ptr++ = (n % 10) + '0';
         n /= 10;
@@ -343,9 +343,9 @@ void itoa(int32_t num, char* buffer) {
     if (isNegative) {
         *ptr++ = '-';
     }
-    *ptr = '\0'; // 终止字符串
+    *ptr = '\0'; // 终�?�字符串
 
-    // 反转字符串
+    // 反转字�?�串
     end = ptr - 1;
     ptr = buffer;
     while (ptr < end) {
@@ -392,7 +392,7 @@ void FOC_SendControl(FOCcontrol_Type FOC_Send,int16 Left_SpeedPWM,int16 Right_Sp
     data[6] = 0;                                            // 和校验清
     for(int i = 0; i < 6; i ++)
     {
-        data[6] += data[i];         // 计算校验位
+        data[6] += data[i];         // 计算校验�??
     }
     uart_write_buffer(UART_1, data, 7);
 }

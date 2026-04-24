@@ -55,6 +55,7 @@ int step = 0;
 int time = 0;
 int main(void)
 {
+    JumpChannel_Last = uart_receiver.channel[5];
     clock_init(SYSTEM_CLOCK_250M); 	// 时钟配置及系统初始化<务必保留>
     interrupt_global_disable();         // 关闭全局中断
     debug_init();                       // 调试串口信息初始化
@@ -70,14 +71,24 @@ int main(void)
 //    uint8 step = 0;
 //    uint8 time = 0;
     // 此处编写用户代码 例如外设初始化代码等   
-    
+
     while(true)
     {
         // 此处编写需要循环执行的代码
         Oled_Display();
 //        Reset_StartPot();
         VOFA_ParameterSent(UART_4);
-
+        
+        // if ( uart_receiver.channel[5] != JumpChannel_Last)
+        // {
+        //     Jump_Finish_Flag = 1;
+        //     JumpChannel_Last = uart_receiver.channel[5];
+        // }
+        // else
+        // {
+        //     Jump_Finish_Flag = 0;
+        //    // JumpChannel_Last = uart_receiver.channel[5];
+        // }
         // 没遥控才用自动判断
         if(uart_receiver.channel[3] != 1792)
         {

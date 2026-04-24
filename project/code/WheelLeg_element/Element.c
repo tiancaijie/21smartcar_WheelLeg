@@ -46,8 +46,8 @@ void Single_BridgeCount(void)
     }
 }
 
-extern PID_HandleTypeDef PID_RowOmega;
-extern PID_HandleTypeDef PID_RowAngle;
+extern PID_HandleTypeDef PID_RollOmega;
+extern PID_HandleTypeDef PID_RollAngle;
 float Stand_Height = 0.055;
 float L_Height_Init = 0.028;//0.052;
 float R_Height_Init = 0.028;//0.052;
@@ -61,6 +61,7 @@ void Single_BridgeStateCTRL(void)
 int JumpTimeCount = 0;
 int JumpOff = 0;
 int Jump_Finish_Flag = 0;
+int Jump_Finish_Flag1 = 0;
 uint16 Extend_time = 80;
 uint16 Shrink_time = 200;
 uint16 Cushion_time = 240;
@@ -109,6 +110,7 @@ void JumpCTRL(void)
         Jump_Flag = 0;
         JumpOff = 0;
         Jump_Finish_Flag = 1;
+ //       Jump_Finish_Flag = 1;
 //        L_Height = Height_Init;
 //        R_Height = Height_Init;
     }
@@ -260,7 +262,7 @@ void P_to_P(void)
             Distance = sqrtf(dx * dx + dy * dy);
 
             //Set_Sign  [Now_Dot] = (180/PI)*atan2(Set_X[Now_Dot + 1] - INSData.Position_x, Set_Y[Now_Dot + 1] - INSData.Position_y) > 0 ? 1 : 0;
-            if(Set_Sign[7] == 2)
+            if(Run_SET[1] == 2)
             {
                 Set_Angle [Now_Dot] = 720 * (Now_Dot - 1) + ((180/PI)*atan2(-(Set_Guidance_X[Now_Dot] - INSData.Position_x), Set_Guidance_Y[Now_Dot] - INSData.Position_y)) ;
             }

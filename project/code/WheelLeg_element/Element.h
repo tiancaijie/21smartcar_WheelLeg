@@ -33,6 +33,7 @@ extern uint8 Now_Dot_Flag;
 extern uint32 All_Dot;
 extern int JumpOff;
 extern int Jump_Finish_Flag;
+extern int Jump_Finish_Flag1;
 extern float Row_LegOffset[2];
 extern float Final_deviation[3];
 extern float Jump_Dis[2];
