@@ -60,7 +60,7 @@ void Single_BridgeStateCTRL(void)
 
 int JumpTimeCount = 0;
 int JumpOff = 0;
-int Jump_Finish_Flag = 0;
+int Jump_Finish_Flag = 1;
 int Jump_Finish_Flag1 = 0;
 uint16 Extend_time = 80;
 uint16 Shrink_time = 200;
@@ -69,7 +69,7 @@ uint16 Over_time = 320;
 float Extend_Height = 2600;
 float Shrink_Height = 0.075;
 float Cushion_Height = 1000;
-float Cushion_Speed  = 0;
+float Cushion_Speed  = 1000;
 void JumpCTRL(void)
 {
     JumpTimeCount+=2;
@@ -101,7 +101,7 @@ void JumpCTRL(void)
        // R_Height -= (Cushion_Height - Height_Init)/(Over_time - Cushion_time);
        // RXc[0] = LXc[0] = 0.02;
 
-      Cushion_Speed += Cushion_Height/(Over_time - Cushion_time);
+      Cushion_Speed -= (float)Cushion_Height/(Over_time - Cushion_time);
       Jump_Flag = 4;
     }
     else if(JumpTimeCount >= Over_time)
@@ -110,6 +110,7 @@ void JumpCTRL(void)
         Jump_Flag = 0;
         JumpOff = 0;
         Jump_Finish_Flag = 1;
+        Cushion_Speed = 1000;
  //       Jump_Finish_Flag = 1;
 //        L_Height = Height_Init;
 //        R_Height = Height_Init;

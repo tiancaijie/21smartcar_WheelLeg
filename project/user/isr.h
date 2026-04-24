@@ -66,6 +66,11 @@ extern Bint16_Union Left_Speed;
 extern Bint16_Union Right_Speed;
 extern double Start_X;
 extern double Start_Y;
+
+// 跳跃执行使能标志  新增
+extern int Jump_Enable_Flag;
+// 通道5上一次状态  保留
+extern uint16 ch5_last_val;
 #endif
 
 

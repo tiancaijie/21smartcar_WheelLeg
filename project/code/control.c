@@ -437,8 +437,8 @@ void Speed_Output(void)
     }
     else
     {
-        liSpeedPwm_L =(int)((hCtrl.Pitch.Output- hCtrl.Yaw.Output)/2);
-        liSpeedPwm_R =(int)((hCtrl.Pitch.Output+ hCtrl.Yaw.Output)/2);
+        liSpeedPwm_L =(int)((hCtrl.Pitch.Output- hCtrl.Yaw.Output)/3);
+        liSpeedPwm_R =(int)((hCtrl.Pitch.Output+ hCtrl.Yaw.Output)/3);
     }
 //     liSpeedPwm_L =(int)((hCtrl.Pitch.Output - hCtrl.Yaw.Output)/(JumpOff + 1));
 //     liSpeedPwm_R =(int)((hCtrl.Pitch.Output + hCtrl.Yaw.Output)/(JumpOff + 1));
