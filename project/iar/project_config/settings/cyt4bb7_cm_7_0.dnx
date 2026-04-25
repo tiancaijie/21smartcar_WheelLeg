@@ -2,7 +2,7 @@
 <settings>
     <Jet>
         <JetConnSerialNo>CMSIS-DAP v2:000100011A5A5BB60000000000051BC7A5A5A5A597969908</JetConnSerialNo>
-        <JetConnFoundProbes />
+        <JetConnFoundProbes>CMSIS-DAP v1:000100011a5a5bb60000000000051bc7a5a5a5a597969908:CMSIS-DAP v2:000100011A5A5BB60000000000051BC7A5A5A5A597969908:</JetConnFoundProbes>
         <PrevWtdReset>Reset and halt after bootloader</PrevWtdReset>
         <DisableInterrupts>0</DisableInterrupts>
         <LeaveRunning>0</LeaveRunning>
@@ -46,7 +46,7 @@
         <PowerConnectPC>1</PowerConnectPC>
     </SWOManager>
     <DebugChecksum>
-        <Checksum>2643200455</Checksum>
+        <Checksum>2591301336</Checksum>
     </DebugChecksum>
     <Disassembly>
         <MixedMode>1</MixedMode>

@@ -293,11 +293,11 @@ void VOFA_ParameterSent(uart_index_enum uart_n)
     uint8 i = 0;
     uint8 end[4] = {0x00, 0x00, 0x80, 0x7f};
 
-    SendValue[0].floatValue = (float)Jump_Finish_Flag;
-    SendValue[1].floatValue = (float)Jump_Finish_Flag1;
+    SendValue[0].floatValue = (float)motor_value.receive_left_speed_data;
+    SendValue[1].floatValue = (float)motor_value.receive_right_speed_data;
     SendValue[2].floatValue = (float)Jump_Flag;
     SendValue[3].floatValue = (float)gx_last;
-    SendValue[4].floatValue = (float)uart_receiver.channel[3];
+    SendValue[4].floatValue = (float)Now_Dot;
     SendValue[5].floatValue = (float)IMUData.roll_mahony;
     SendValue[6].floatValue = (float)hCtrl.Roll.Output;
     SendValue[7].floatValue = (float)hCtrl.Pitch.LegOutput;
