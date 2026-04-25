@@ -46,26 +46,24 @@ double Set_Guidance_X[8];
 double Set_Guidance_Y[8];
 double Set_X[20] = {0};
 double Set_Y[20] = {0};
-uint32 SubSet_OKb;//跑车模式：�?�一、�?�二、�?�三
+uint32 SubSet_OKb;//跑车模式：一、二、三
 float GPS_DisSET[8];
 float GPS_AngSET[8];
 double CoSub_OKb[100];
 uint16 Getpoint_LastFlag = 192;
 unsigned char Oled_Model_Choose = 0;
-/******************************************************
-** Function: Oled_Input
-** Description: �??显输入参�??
-** Others:
-*******************************************************/
+/**
+ * @brief OLED界面输入参数
+ */
 void Oled_Input(void)
 {
-    unsigned char SectorNum = 0;    //锟斤拷�?�锟斤拷锟斤拷锟斤拷
+    unsigned char SectorNum = 0;    // 菜单选择编号
     int Temp = 0;
     int input = 0;
-    uint8 notation;
+    //uint8 notation;
 
     Oled_Model_Choose = 0;
-    CH455_Write();
+    //CH455_Write();
     OLED_CLS();
 
     OLED_ShowStr(0,0,"1 Sub",2);
@@ -78,11 +76,11 @@ void Oled_Input(void)
     Oled_Model_Choose = KeyboardInput(88, 6);
     OLED_CLS();
 
-    SectorNum = Oled_Model_Choose;//锟斤拷锟斤拷锟斤�??
+    SectorNum = Oled_Model_Choose;// 菜单选择编号
 
     switch (Oled_Model_Choose)
     {
-        case 1:                                            // 锟斤拷图
+        case 1:                                            // 赛道选择
         {
             flash_read_page(0, 0, &SubSet_OKb, 1);
             //"Subject",
@@ -101,7 +99,7 @@ void Oled_Input(void)
                 SubSet_OKb = input;
 
                 flash_erase_page(0, 0);
-                //�??
+                // 擦除原有数据
                 flash_write_page(0, 0, &SubSet_OKb, 1);
             }
             OLED_CLS();
@@ -236,7 +234,7 @@ void Oled_Input(void)
 
             break;
         }
-        case 6 :        //存放导航�??
+        case 6 :        // 存储导航点
         {
             Temp = (SectorNum - 1) * 8;
 
@@ -291,7 +289,7 @@ void Oled_Input(void)
 void Get_Point(void)
 {
 
-    unsigned char SectorNum = 0;    //锟斤拷�?�锟斤拷锟斤拷锟斤拷
+    unsigned char SectorNum = 0;    // 菜单选择编号
     int Temp = 0;
     int input = 0;
     uint32 notation;
@@ -307,7 +305,7 @@ void Get_Point(void)
     Oled_Model_Choose = KeyboardInput(88, 6);
     OLED_CLS();
 
-    SectorNum = Oled_Model_Choose;//锟斤拷锟斤拷锟斤�??
+    SectorNum = Oled_Model_Choose;// 菜单选择编号
 
     switch (Oled_Model_Choose)
     {
@@ -382,7 +380,7 @@ void Get_Point(void)
                         Getpoint_LastFlag = uart_receiver.channel[2];
                         break;
                     }
-                    for(int i = 0; i < 10 ; i++); // 开关消�??
+                    for(int i = 0; i < 10 ; i++); // 延时消抖
                 }
 
                 Set_X[i] = INSData.Position_x;
@@ -393,7 +391,7 @@ void Get_Point(void)
                 Set_X_Row [i] = (uint32)(fabs(Set_X[i] * 100));
                 Set_Y_Row [i] = (uint32)(fabs(Set_Y[i] * 100));
 
-                i++; // 下一�??�??
+                i++; // 下一个点
                 Navigation.MarkPot.Point_Order++;
                 OLED_CLS();
             }
@@ -428,11 +426,9 @@ void Get_Point(void)
 }
 
 
-/******************************************************
-** Function: Oled_Display
-** Description: OLED显示图像或者变�??
-** Others:
-*******************************************************/
+/**
+ * @brief OLED数据显示
+ */
 void Oled_Display(void)                 //锟斤拷锟斤拷锟斤拷示
 {
     if(Oled_Model_Choose == 5)
@@ -455,11 +451,9 @@ void Oled_Display(void)                 //锟斤拷锟斤拷锟斤拷示
     }
 }
 
-/******************************************************
-** Function: casex_Read
-** Description: 读取对应case�??的变�??
-** Others:
-*******************************************************/
+/**
+ * @brief 读取对应case的变量
+ */
 void Run_flash_read(void)
 {
     int case2_Temp = 8;
@@ -560,7 +554,7 @@ void GPS_flash_read(void)
 
 void Hyperparameter_Init(void)
 {
-    //跑车模式
+    // 跑车模式
     flash_read_page(0, 0, &SubSet_OKb, 1);
     hCtrl.Subject_Set = SubSet_OKb;
     switch(hCtrl.Subject_Set)

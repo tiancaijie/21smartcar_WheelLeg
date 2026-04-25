@@ -4,17 +4,17 @@
 #include "MahonyAHRS.h"
 int giWheelSpeed_Old = 0,giLeftWheelSpeed_old = 0,giRightWheelSpeed_old = 0;
 int giWheelSpeed = 0,giRightWheelSpeed = 0,giLeftWheelSpeed = 0, SpeedMax, SpeedMid, SpeedMin;
-int SP_RightFiltering[2] = {0};             //历史�??
-int SP_LeftFiltering[2] = {0};              //历史�??
+int SP_RightFiltering[2] = {0};             // 右轮历史速度滤波
+int SP_LeftFiltering[2] = {0};              // 左轮历史速度滤波
 int Change[2];
 int SpeedHill, SpeedCircle;
-typedef union//������ת�����͹�����
+typedef union// float与long互转联合体
 {
   float fdata;
   unsigned long ldata;
 }FloatLongType;
 
-void Float_to_Byte(float f,unsigned char byte[])//������ת4�ֽ�
+void Float_to_Byte(float f,unsigned char byte[])// float转4字节数组
 {
     FloatLongType fl;
     fl.fdata=f;
@@ -46,19 +46,11 @@ void GetSpeed (void)
        encoder_clear_count(TC_CH20_ENCODER);
 }
 
-/*************************************************
-Function: ClearArrayChar
-Description: 清空数据
-Calls: �??
-Called By: main.c
-Table Accessed: �??
-Table Updated: �??
-Input: 需要清零的数组首地址
-       需要清零的数组尾地址
-Output: �??
-Return: �??
-Others:�??
-*************************************************/
+/**
+ * @brief 清空数据
+ * @param PTemp 需要清空的数组起始地址
+ * @param PEnd  需要清空的数组结束地址
+ */
 void ClearArrayChar(unsigned char *PTemp, unsigned char *PEnd)
 {
     while (PTemp <= PEnd)
@@ -103,10 +95,8 @@ void ClearArrayfloat(float *PTemp, float *PEnd)
 }
 
 /**
-** Function: m_sqrt
-** Description: 正数开�??
-** Others:�??
-**/
+ * @brief 平方根计算
+ */
 unsigned int m_sqrt(unsigned int x)
 {
    unsigned char ans = 0,p = 0x80;
@@ -121,13 +111,11 @@ unsigned int m_sqrt(unsigned int x)
    }
    return(ans);
 }
-/************************************************
- * Function: Square
- * Description: 求数�??平方
- * Calls: None
- * Input: arg
- * Return: arg * arg;
- ************************************************/
+/**
+ * @brief 求平方
+ * @param arg 输入参数
+ * @return arg * arg
+ */
 int Square_int(int arg)
 {
     return arg * arg;
@@ -137,10 +125,10 @@ float Square_float(float arg)
     return arg * arg;
 }
 /**
-** Function: Linear_Interpolation
-** Description: 线性插�??
-** Others:*Ptemp：数组的起�?�指针，End_Row：一共进行�?�少�??
-**/
+ * @brief 线性插值补全
+ * @param Ptemp 数组指针
+ * @param End_Row 需要插值的数组长度
+ */
 void Linear_Interpolation(int *Ptemp,int End_Row)
 {
     int i = 0,j = 0,k = 0;
@@ -167,10 +155,8 @@ void Linear_Interpolation(int *Ptemp,int End_Row)
     }
 }
 /**
-** Function: ParameterSent
-** Description: ��λ��������
-** Others:��
-**/
+ * @brief 参数发送
+ */
 void ParameterSent(void)
 {
     int itmp;
@@ -244,8 +230,8 @@ int uartget = 0;
 
 void VOFA_Receive_callback (uart_index_enum uart_n)
 {
-    uint8 dat;//记录当下的项
-    //把分块的广播报文记录入数组中
+    uint8 dat;// 记录当前项
+    // 将分段的串口数据记录到数组中
     while(uart_query_byte(uart_n, &dat) && Vofa_Record < 2 )
     {
         Vofa_Get[Vofa_Record] = dat;
@@ -333,7 +319,7 @@ void itoa(int32_t num, char* buffer) {
         n = (uint32_t)num;
     }
 
-    // 生成反向字�?�串
+    // 生成逆序字符串
     do {
         *ptr++ = (n % 10) + '0';
         n /= 10;
@@ -343,9 +329,9 @@ void itoa(int32_t num, char* buffer) {
     if (isNegative) {
         *ptr++ = '-';
     }
-    *ptr = '\0'; // 终�?�字符串
+    *ptr = '\0'; // 结束字符串
 
-    // 反转字�?�串
+    // 翻转字符串
     end = ptr - 1;
     ptr = buffer;
     while (ptr < end) {
@@ -389,10 +375,10 @@ void FOC_SendControl(FOCcontrol_Type FOC_Send,int16 Left_SpeedPWM,int16 Right_Sp
             break;
         }
     }
-    data[6] = 0;                                            // 和校验清
+    data[6] = 0;                                            // 校验和清零
     for(int i = 0; i < 6; i ++)
     {
-        data[6] += data[i];         // 计算校验�??
+        data[6] += data[i];         // 计算校验和
     }
     uart_write_buffer(UART_1, data, 7);
 }

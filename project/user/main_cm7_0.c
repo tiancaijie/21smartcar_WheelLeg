@@ -68,15 +68,15 @@ int main(void)
     interrupt_global_enable (0);
     
     Get_Point();
-//    uint8 step = 0;
-//    uint8 time = 0;
+    // uint8 step = 0;
+    // uint8 time = 0;
     // 此处编写用户代码 例如外设初始化代码等   
 
     while(true)
     {
         // 此处编写需要循环执行的代码
         Oled_Display();
-//        Reset_StartPot();
+        // Reset_StartPot();
         VOFA_ParameterSent(UART_4);
         
         // if ( uart_receiver.channel[5] != JumpChannel_Last)

@@ -131,7 +131,7 @@ PID_HandleTypeDef PID_Patrol_Line;
 
 void PID_InitAll(void)
 {
-    // 闂備浇娉曢崰鎰板几婵犳艾绠柣鎴ｅГ閺呮悂鎮跺☉娆樻畼妞わ綆鍣ｉ獮蹇涙倻閼恒儲娅㈢紓浣瑰絻濡叉ェ
+    // 初始化所有PID参数
     PID_init(&PID_PitchLeg, &PID_PitchLeg_init);
     PID_init(&PID_PitchOmega, &PID_PitchOmega_init);
     PID_init(&PID_PitchAngle, &PID_PitchAngle_init);
@@ -177,30 +177,32 @@ float gfAngleSpeed = 0;
 float gfAngleSpeed_I = 0;
 float gfAngle_Acc[2] = {0};
 
-float gx_last,gy_last,gz_last,ax_last,ay_last,az_last; //闂佸搫鐗為幏椋庣磽娴ｅ摜澧ｆ繛鏉戞瀹曠娀寮借濮ｅ鏌ｉ妸銉ヮ仹缂佸崬鐖奸獮鍥偄闁垮褰滈梺绋款煭閹凤拷
+float gx_last,gy_last,gz_last,ax_last,ay_last,az_last; // IMU数据上一次值
 void Angle_cal(void)
 {
-//    icm20602_get_acc();
-//    icm20602_get_gyro();
-//    icm20602_data_trans();
+//    icm20602_get_acc(); // 备用IMU获取加速度
+//    icm20602_get_gyro(); // 备用IMU获取角速度
+//    icm20602_data_trans(); // 备用IMU数据转换
     imu963ra_get_acc();
     imu963ra_get_gyro();
     imu963_data_trans();
-    /*婵炶揪绲介柊锝夋晸閼恒儳顣查柟韬插�曢埢鏃堟晸閿燂拷*/
+    /* IMU数据融合 */
 
-    ax_last = ax_last*0.9 + IMUData.ax*0.1;
-    ay_last = ay_last*0.9 + IMUData.ay*0.1;
-    az_last = az_last*0.9 + IMUData.az*0.1;
+    // 对IMU原始数据进行一阶低通滤波，减少噪声
+    ax_last = ax_last*0.9 + IMUData.ax * 0.1;
+    ay_last = ay_last*0.9 + IMUData.ay * 0.1;
+    az_last = az_last*0.9 + IMUData.az * 0.1;
 
-    gx_last = gx_last*0.85 + IMUData.gx*0.15;
-    gy_last = gy_last*0.85 + IMUData.gy*0.15;
-    gz_last = gz_last*0.85 + IMUData.gz*0.15;
+    gx_last = gx_last*0.85 + IMUData.gx * 0.15;
+    gy_last = gy_last*0.85 + IMUData.gy * 0.15;
+    gz_last = gz_last*0.85 + IMUData.gz * 0.15;
 
     IMUData.yaw_mahony_Last = IMUData.yaw_trans;
 
-    MahonyAHRSupdateIMU(&IMUData.q[0],IMUData.gx,IMUData.gy,IMUData.gz,ax_last,ay_last,az_last);       //闂佺硶鏅炲銊ц姳閻炲潊hony缂備胶濮甸〃鍡欐兜閸洖鍗抽悗娑櫳戦悡锟介梺鎼炲劜缁嬫垿宕㈤幘璇叉瀬闁谎咁煩mData.q
-    get_angle(&IMUData.q[0],&IMUData.yaw_mahony,&IMUData.pitch_mahony,&IMUData.roll_mahony);  //婵炲濮存绋棵洪幘璇茬闁告劏鏅滃▓鍫曟偡濞嗘瑧鎮奸柣锝堫嚙閳诲氦顦冲┑顖滃劋閹棁绠涢幘宕囦粴闂佹眹鍔岀�氼垶锝炲Δ浣瑰劅闁跨噦鎷�
+    MahonyAHRSupdateIMU(&IMUData.q[0],IMUData.gx,IMUData.gy,IMUData.gz,ax_last,ay_last,az_last);        // Mahony算法姿态解算，更新IMUData.q
+    get_angle(&IMUData.q[0],&IMUData.yaw_mahony,&IMUData.pitch_mahony,&IMUData.roll_mahony);            // 四元数转欧拉角，得到yaw、pitch、roll
 
+    // yaw角度归一化到[-PI, PI]
     if((IMUData.yaw_mahony - hCtrl.Yaw.BalancePoint) <= PI && (IMUData.yaw_mahony - hCtrl.Yaw.BalancePoint) >= -PI)
     {
         IMUData.yaw_trans = (IMUData.yaw_mahony - hCtrl.Yaw.BalancePoint);
@@ -214,12 +216,15 @@ void Angle_cal(void)
         IMUData.yaw_trans = (IMUData.yaw_mahony - hCtrl.Yaw.BalancePoint) - 2 * PI;
     }
 
+    // 记录yaw角累计圈数，实现360度以上的角度跟踪
     IMUData.yaw_mahony_turns = (IMUData.yaw_mahony_Last - IMUData.yaw_trans) >  PI ? IMUData.yaw_mahony_turns + 1 : IMUData.yaw_mahony_turns;
     IMUData.yaw_mahony_turns = (IMUData.yaw_mahony_Last - IMUData.yaw_trans) < -PI ? IMUData.yaw_mahony_turns - 1 : IMUData.yaw_mahony_turns;
 
+    // 计算总yaw角度（单位：度），可用于全局航向
     IMUData.sum_yaw_mahony = (float)IMUData.yaw_mahony_turns*2*PI + IMUData.yaw_trans;
     IMUData.sum_yaw_mahony = Rad2Deg(IMUData.sum_yaw_mahony);
 
+    // roll角度零点校正
     IMUData.roll_mahony = IMUData.roll_mahony - hCtrl.Roll.BalancePoint;
 }
 
@@ -227,7 +232,8 @@ float L1 = 0.037;  //cm
 float L2 = 0.061;
 float L3 = 0.090;
 #define Angle_limit 0.48//解算角度限幅
-void FiveLink_Opposite(VMC_Data_Type* leg, float LXc, float Yc)//五连杆运动学逆解
+// 五连杆机构逆解，输入末端期望位置，输出各关节角度
+void FiveLink_Opposite(VMC_Data_Type* leg, float LXc, float Yc)
 {
     float AC,CE;
     float Phi,Phi2,Beta,Beta2;
@@ -250,6 +256,7 @@ void FiveLink_Opposite(VMC_Data_Type* leg, float LXc, float Yc)//五连杆运动
 
 
 
+// 输出PWM信号到四个舵机，控制腿部动作
 void PWM_Output(VMC_Data_Type* leg1,VMC_Data_Type* leg2)
 {
     if (Jump_Flag == 1)
@@ -296,7 +303,7 @@ void PWM_Output(VMC_Data_Type* leg1,VMC_Data_Type* leg2)
             leg2->PWM_Out1 =  (int)(RightF_CENTER - 150 + hCtrl.Pitch.LegOutput - fabsf(hCtrl.Roll.Output)); //(1000/PI*leg2->Theta1*6 + RightF_CENTER);
             leg2->PWM_Out2 =  (int)(RightB_CENTER + 150 + hCtrl.Pitch.LegOutput + fabsf(hCtrl.Roll.Output)); //(1000/PI*leg2->Theta2*6 + RightB_CENTER);
         }        
-        // else                                    //右倾
+        // else                                 //右倾（备用方案）
         // {
         //     leg1->PWM_Out1 =  (int)(LeftF_CENTER +250 - hCtrl.Pitch.LegOutput);  //(1000/PI*leg1->Theta1*6 + LeftF_CENTER);
         //     leg1->PWM_Out2 =  (int)(LeftB_CENTER -250 - hCtrl.Pitch.LegOutput);  //(1000/PI*leg1->Theta2*6 + LeftB_CENTER);
@@ -317,6 +324,7 @@ void PWM_Output(VMC_Data_Type* leg1,VMC_Data_Type* leg2)
 }
 
 float Hill__Height = 0.055;//坡道站立
+// 坡道站立高度控制
 void Hill_Stand(void)
 {
     if (L_Height_Init < Hill__Height)
@@ -342,6 +350,7 @@ float Wiggle_Step_Init = 0.00032;//0.00032
 int Slow_Flag = 0;
 int Single_Jump = 0;
 float LegOutput = 0;
+// 俯仰腿部控制，调节腿部输出以实现速度闭环
 void Pitch_LegCtrl(void)
 {
     Remote_Conctol();
@@ -368,6 +377,7 @@ void Pitch_LegCtrl(void)
 
 int PitchOut_Last = 0;
 #define Pitch_StepLimit 350//直立环输出阶跃限幅
+// 俯仰角速度环控制
 void PitchOmegaCtrl(void)
 {
     PitchOut_Last = (int)hCtrl.Pitch.Output;
@@ -375,22 +385,23 @@ void PitchOmegaCtrl(void)
     hCtrl.Pitch.Output = Step_Limit(hCtrl.Pitch.Output, PitchOut_Last, Pitch_StepLimit);
 }
 
-/************************************************
-** Function: PitchAngleCtrl
-** Description: Pitch瑙掑害鎺у埗
-** Others:鏃�
-**
-*************************************************/
+/**
+ * @brief Pitch角度控制
+ * @note  无
+ */
+// 俯仰角度环控制
 void PitchAngleCtrl(void)
 {
     hCtrl.Pitch.ExpectOmega = PID_calc(&PID_PitchAngle,Expect_Angle_Pitch,(IMUData.pitch_mahony - hCtrl.Pitch.BalancePoint));
 }
 
+// 航向角速度环控制
 void YawOmegaCtrl(void)
 {
     hCtrl.Yaw.Output = PID_calc(&PID_YawOmega,hCtrl.Yaw.ExpectOmega_Exp,-IMUData.gz);
 }
 
+// 航向角度环控制
 void YawAngleCtrl(void)
 {
     Remote_Conctol();
@@ -398,6 +409,7 @@ void YawAngleCtrl(void)
     hCtrl.Yaw.ExpectOmega_Exp = PID_calc(&PID_YawAngle,Expect_Angle,-IMUData.sum_yaw_mahony);
 }
 
+// 横滚角度环控制
 void RollAngleCtrl(void)
 {
     hCtrl.Roll.Output = PID_calc(&PID_RollAngle,0,IMUData.roll_mahony);
@@ -408,6 +420,7 @@ float IMU_ax_output_a[N] = {0};//Yaw角速度滤波
 float IMU_ax_input_a[N] = {0};
 float Swerve_P = 4.5;
 #define Swerve_Step  0.0004//压弯阶跃限幅
+// 压弯补偿（预留）
 void Swerve_RollOffset(void)
 {
 
@@ -427,6 +440,7 @@ double Deviation_filter_a[2] = {1,-T};
 float Angle_Offset[2] = {0};
 #define Angle_Offset_Limit 0.25
 #define Yaw_StepLimit 180
+// 方向控制（预留）
 void Direction_Ctrl(void)
 {
 
@@ -434,6 +448,7 @@ void Direction_Ctrl(void)
 
 int Run_Delay = 0;
 float Final_Speed = 0;
+// 电机速度输出，合成左右轮PWM并限幅
 void Speed_Output(void)
 {
     int32 liSpeedPwm_L,liSpeedPwm_R;
@@ -444,8 +459,8 @@ void Speed_Output(void)
     }
     else
     {
-        liSpeedPwm_L =(int)((hCtrl.Pitch.Output- hCtrl.Yaw.Output)/3);
-        liSpeedPwm_R =(int)((hCtrl.Pitch.Output+ hCtrl.Yaw.Output)/3);
+        liSpeedPwm_L =(int)((hCtrl.Pitch.Output- hCtrl.Yaw.Output) / 3);
+        liSpeedPwm_R =(int)((hCtrl.Pitch.Output+ hCtrl.Yaw.Output) / 3);
     }
 //     liSpeedPwm_L =(int)((hCtrl.Pitch.Output - hCtrl.Yaw.Output)/(JumpOff + 1));
 //     liSpeedPwm_R =(int)((hCtrl.Pitch.Output + hCtrl.Yaw.Output)/(JumpOff + 1));
@@ -463,6 +478,7 @@ void Speed_Output(void)
     }
 }
 
+// 电机超速保护，防止失控
 void SAFE_PROTECT(void)
 {
     if(ABS(motor_value.receive_left_speed_data) > 10000 || ABS(motor_value.receive_right_speed_data) > 10000)
@@ -472,12 +488,12 @@ void SAFE_PROTECT(void)
     }
 }
 
+// 处理遥控器输入，更新期望角度和速度
 void Remote_Conctol (void)
 {
-    if(uart_receiver.channel[3] == 1792)                                             //4通道保护（是否打点）
+    if(uart_receiver.channel[3] == 1792)                                             // 4通道保护（是否打点）
     {
-        Expect_Angle += (uart_receiver.channel[0] - 992) * 0.01 ;                    //1通道方向
-        hCtrl.Pitch.ExpectSpeed_Act = (uart_receiver.channel[1] - 992) * 1 ;         //2通道油门
+        Expect_Angle += (uart_receiver.channel[0] - 992) * 0.01 ;                    // 1通道方向
+        hCtrl.Pitch.ExpectSpeed_Act = (uart_receiver.channel[1] - 992) * 1 ;         // 2通道油门
     }
-
 }

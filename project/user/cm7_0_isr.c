@@ -125,15 +125,15 @@ void pit0_ch0_isr()                     // 定时器通道 0 周期中断服务函数
 // 1. 检测开关切换 + 跳跃已完成 → 启动跳跃（仅触发一次启动）
 if((uart_receiver.channel[3] == 1792) && (uart_receiver.channel[5] != ch5_last_val) && (Jump_Finish_Flag == 1))
 {
-    Jump_Enable_Flag = 1;      // 开启跳跃执行
-    Jump_Finish_Flag = 0;      // 锁定，防止重复触发
-    ch5_last_val = uart_receiver.channel[5]; // 更新开关状态
+    Jump_Enable_Flag = 1;      
+    Jump_Finish_Flag = 0;      
+    ch5_last_val = uart_receiver.channel[5]; 
 }
 
-// 2. 使能开启时，每2ms自动调用JumpCTRL()，完整跑完所有阶段
+// 2. 使能开启执行跳跃
 if(Jump_Enable_Flag == 1)
 {
-    JumpCTRL(); // 循环调用，分段执行跳跃
+    JumpCTRL();
 }
 
 // 3. 跳跃完全结束后，自动关闭使能，等待下一次触发
