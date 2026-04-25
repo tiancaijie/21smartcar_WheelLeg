@@ -44,6 +44,7 @@ extern float Expect_Angle_Pitch;
 extern uint8 Bridge1_Start,Bridge1_End,Bridge2_Start,Bridge2_End,Bridge_Type;
 extern uint8 Run_GPS ;
 extern uint8 Run_INS ;
+extern float Speed_Compensation;
 void Angle_Set(void);
 void Speed_Set(void);
 void Single_BridgeJudgement(void);

@@ -289,20 +289,20 @@ void PWM_Output(VMC_Data_Type* leg1,VMC_Data_Type* leg2)
             leg2->PWM_Out1 =  (int)(RightF_CENTER + hCtrl.Pitch.LegOutput); //(1000/PI*leg2->Theta1*6 + RightF_CENTER);
             leg2->PWM_Out2 =  (int)(RightB_CENTER + hCtrl.Pitch.LegOutput); //(1000/PI*leg2->Theta2*6 + RightB_CENTER);
         }
-        // else                                    //右倾
-        // {
-        //     leg1->PWM_Out1 =  (int)(LeftF_CENTER - hCtrl.Pitch.LegOutput);  //(1000/PI*leg1->Theta1*6 + LeftF_CENTER);
-        //     leg1->PWM_Out2 =  (int)(LeftB_CENTER - hCtrl.Pitch.LegOutput);  //(1000/PI*leg1->Theta2*6 + LeftB_CENTER);
-        //     leg2->PWM_Out1 =  (int)(RightF_CENTER + hCtrl.Pitch.LegOutput - fabsf(hCtrl.Roll.Output)); //(1000/PI*leg2->Theta1*6 + RightF_CENTER);
-        //     leg2->PWM_Out2 =  (int)(RightB_CENTER + hCtrl.Pitch.LegOutput + fabsf(hCtrl.Roll.Output)); //(1000/PI*leg2->Theta2*6 + RightB_CENTER);
-        // }        
         else                                    //右倾
         {
-            leg1->PWM_Out1 =  (int)(LeftF_CENTER +250 - hCtrl.Pitch.LegOutput);  //(1000/PI*leg1->Theta1*6 + LeftF_CENTER);
-            leg1->PWM_Out2 =  (int)(LeftB_CENTER -250 - hCtrl.Pitch.LegOutput);  //(1000/PI*leg1->Theta2*6 + LeftB_CENTER);
-            leg2->PWM_Out1 =  (int)(RightF_CENTER -250 + hCtrl.Pitch.LegOutput - fabsf(hCtrl.Roll.Output)); //(1000/PI*leg2->Theta1*6 + RightF_CENTER);
-            leg2->PWM_Out2 =  (int)(RightB_CENTER +250 + hCtrl.Pitch.LegOutput + fabsf(hCtrl.Roll.Output)); //(1000/PI*leg2->Theta2*6 + RightB_CENTER);
-        }
+            leg1->PWM_Out1 =  (int)(LeftF_CENTER + 150 - hCtrl.Pitch.LegOutput);  //(1000/PI*leg1->Theta1*6 + LeftF_CENTER);
+            leg1->PWM_Out2 =  (int)(LeftB_CENTER - 150 - hCtrl.Pitch.LegOutput);  //(1000/PI*leg1->Theta2*6 + LeftB_CENTER);
+            leg2->PWM_Out1 =  (int)(RightF_CENTER - 150 + hCtrl.Pitch.LegOutput - fabsf(hCtrl.Roll.Output)); //(1000/PI*leg2->Theta1*6 + RightF_CENTER);
+            leg2->PWM_Out2 =  (int)(RightB_CENTER + 150 + hCtrl.Pitch.LegOutput + fabsf(hCtrl.Roll.Output)); //(1000/PI*leg2->Theta2*6 + RightB_CENTER);
+        }        
+        // else                                    //右倾
+        // {
+        //     leg1->PWM_Out1 =  (int)(LeftF_CENTER +250 - hCtrl.Pitch.LegOutput);  //(1000/PI*leg1->Theta1*6 + LeftF_CENTER);
+        //     leg1->PWM_Out2 =  (int)(LeftB_CENTER -250 - hCtrl.Pitch.LegOutput);  //(1000/PI*leg1->Theta2*6 + LeftB_CENTER);
+        //     leg2->PWM_Out1 =  (int)(RightF_CENTER -250 + hCtrl.Pitch.LegOutput - fabsf(hCtrl.Roll.Output)); //(1000/PI*leg2->Theta1*6 + RightF_CENTER);
+        //     leg2->PWM_Out2 =  (int)(RightB_CENTER +250 + hCtrl.Pitch.LegOutput + fabsf(hCtrl.Roll.Output)); //(1000/PI*leg2->Theta2*6 + RightB_CENTER);
+        // }
     }
 
     leg1->PWM_Out1 = Amplitude_Limit(leg1->PWM_Out1, 2220, 6400);
@@ -439,8 +439,8 @@ void Speed_Output(void)
     int32 liSpeedPwm_L,liSpeedPwm_R;
     if (Jump_Flag == 0)
     {
-        liSpeedPwm_L =(int)(hCtrl.Pitch.Output - hCtrl.Yaw.Output);
-        liSpeedPwm_R =(int)(hCtrl.Pitch.Output + hCtrl.Yaw.Output);
+        liSpeedPwm_L =(int)(hCtrl.Pitch.Output - hCtrl.Yaw.Output + Speed_Compensation);
+        liSpeedPwm_R =(int)(hCtrl.Pitch.Output + hCtrl.Yaw.Output + Speed_Compensation);
     }
     else
     {

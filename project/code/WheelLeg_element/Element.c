@@ -224,26 +224,65 @@ void Angle_Setting(void)
     Expect_Angle = Set_Angle[Now_Dot];
 }
 
-
+float Speed_Compensation = 0;
 void Speed_Set(void)
 {
-    if(Distance < 0.2 && fabsf(hCtrl.Pitch.ExpectSpeed_Act) > 550)
-    {
-        hCtrl.Pitch.ExpectSpeed_Act = 0;
-        Now_Dot_Flag++;
-    }
-    else if(Distance < 0.1)
-    {
-        hCtrl.Pitch.ExpectSpeed_Act = 0;
-        Now_Dot_Flag++;
-    }
-    else if(Distance < 2.0 && fabsf(hCtrl.Pitch.ExpectSpeed_Act) > 550)
-    {
-        hCtrl.Pitch.ExpectSpeed_Act =  Distance / 2 * hCtrl.Pitch.ExpectSpeed_Exp;
-    }
-    else if(Distance < 1.0)
+    //速度1.0 提前减速
+    // if(Distance < 0.2 && fabsf(hCtrl.Pitch.ExpectSpeed_Act) > 550)
+    // {
+    //     hCtrl.Pitch.ExpectSpeed_Act = 0;
+    //     Now_Dot_Flag++;
+    // }
+    // else if(Distance < 0.1)
+    // {
+    //     hCtrl.Pitch.ExpectSpeed_Act = 0;
+    //     Now_Dot_Flag++;
+    // }
+    // else if(Distance < 2.0 && fabsf(hCtrl.Pitch.ExpectSpeed_Act) > 550)
+    // {
+    //     hCtrl.Pitch.ExpectSpeed_Act =  Distance / 2 * hCtrl.Pitch.ExpectSpeed_Exp;
+    // }
+    // else if(Distance < 1.0)
+    // {
+    //     hCtrl.Pitch.ExpectSpeed_Act =  Distance * hCtrl.Pitch.ExpectSpeed_Exp;
+    // }
+    // else
+    // {
+    //     hCtrl.Pitch.ExpectSpeed_Act = hCtrl.Pitch.ExpectSpeed_Exp;
+    // }
+
+    //速度2.0 有反转
+    // if(Distance < 0.2 && fabsf(hCtrl.Pitch.ExpectSpeed_Act) > 550)
+    // {
+    //     hCtrl.Pitch.ExpectSpeed_Act = 0;
+    //     Now_Dot_Flag++;
+    // }
+    // else if(Distance < 0.1)
+    // {
+    //     hCtrl.Pitch.ExpectSpeed_Act = 0;
+    //     Now_Dot_Flag++;
+    // }
+    // else if(Distance < 1.5 && fabsf(hCtrl.Pitch.ExpectSpeed_Act) > 550)
+    // {
+    //     hCtrl.Pitch.ExpectSpeed_Act =  Distance / 2 * hCtrl.Pitch.ExpectSpeed_Exp;
+    //     Speed_Compensation = -hCtrl.Pitch.LegOutput * 0.8;
+    // }
+    // else if(Distance < 0.8)
+    // {
+    //     hCtrl.Pitch.ExpectSpeed_Act =  Distance * hCtrl.Pitch.ExpectSpeed_Exp;
+    //     Speed_Compensation = -hCtrl.Pitch.LegOutput * 1.5;
+    // }
+
+    //速度3.0 尝试ing
+    if(Distance < 1.0 && fabsf(hCtrl.Pitch.ExpectSpeed_Act) > 550)
     {
         hCtrl.Pitch.ExpectSpeed_Act =  Distance * hCtrl.Pitch.ExpectSpeed_Exp;
+        Speed_Compensation = -hCtrl.Pitch.LegOutput * 2.5;
+        if(Distance < 0.2)
+        {
+            hCtrl.Pitch.ExpectSpeed_Act = 0;
+            Now_Dot_Flag++;
+        }
     }
     else
     {
