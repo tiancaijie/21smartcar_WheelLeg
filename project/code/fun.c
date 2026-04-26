@@ -293,13 +293,13 @@ void VOFA_ParameterSent(uart_index_enum uart_n)
     uint8 i = 0;
     uint8 end[4] = {0x00, 0x00, 0x80, 0x7f};
 
-    SendValue[0].floatValue = (float)motor_value.receive_left_speed_data;
-    SendValue[1].floatValue = (float)motor_value.receive_right_speed_data;
-    SendValue[2].floatValue = (float)Jump_Flag;
+    SendValue[0].floatValue = (float)Element_Flag[Now_Dot];
+    SendValue[1].floatValue = (float)PWM_Output_Flag;
+    SendValue[2].floatValue = (float)Jump_Finish_Flag;
     SendValue[3].floatValue = (float)gx_last;
     SendValue[4].floatValue = (float)Now_Dot;
-    SendValue[5].floatValue = (float)IMUData.roll_mahony;
-    SendValue[6].floatValue = (float)hCtrl.Roll.Output;
+    SendValue[5].floatValue = (float)Element_Flag[1];
+    SendValue[6].floatValue = (float)Element_Flag[2];
     SendValue[7].floatValue = (float)hCtrl.Pitch.LegOutput;
     SendValue[8].floatValue = (float)LegOutput;
     SendValue[9].floatValue = (float)hCtrl.Pitch.LegOutput;

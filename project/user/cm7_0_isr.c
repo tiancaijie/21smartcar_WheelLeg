@@ -130,14 +130,19 @@ void pit0_ch0_isr()                     // 定时器通道 0 周期中断服务函数
         ch4_last_val = uart_receiver.channel[3];
     }
 
-    if (uart_receiver.channel[3] == 192 || uart_receiver.channel[3] == 1792)
+    if (uart_receiver.channel[6] != ch5_last_val)
     {
         Element_Permission ++;
+        ch5_last_val = uart_receiver.channel[6];
+        if (Element_Permission > 1)
+        {
+            Element_Permission = 0;
+        }
     }
-    if (Element_Permission > 2)
-    {
-        Element_Permission = 1;
-    }   
+    // if (Element_Permission > 2)
+    // {
+    //     Element_Permission = 1;
+    // }   
 
     Element_Play();
     //遥控跳跃

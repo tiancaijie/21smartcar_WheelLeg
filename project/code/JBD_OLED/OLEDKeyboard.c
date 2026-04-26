@@ -64,7 +64,7 @@ void Oled_Input(void)
     //uint8 notation;
 
     Oled_Model_Choose = 0;
-    //CH455_Write();
+    CH455_Write();
     OLED_CLS();
 
     OLED_ShowStr(0,0,"1 Sub",2);
@@ -357,6 +357,9 @@ void Get_Point(void)
             }
 
             All_Dot = (uint32)input;
+            Temp = 72;
+            flash_erase_page(0, Temp);
+            flash_write_page(0, Temp, &All_Dot, 1);
 
             OLED_CLS();
 
@@ -388,7 +391,7 @@ void Get_Point(void)
                 Set_X_Row [i] = (uint32)(fabs(Set_X[i] * 100));
                 Set_Y_Row [i] = (uint32)(fabs(Set_Y[i] * 100));
 
-                if (Element_Permission == 2)
+                if (Element_Permission == 1)
                 {
                     Jump_Element[i] = Jump_Element_Count;
                 }
@@ -415,8 +418,8 @@ void Get_Point(void)
             }
 
             Temp = 72;
-            flash_erase_page(0, Temp);
-            flash_write_page(0, Temp, &All_Dot, 1);
+            // flash_erase_page(0, Temp);
+            // flash_write_page(0, Temp, &All_Dot, 1);
 
             for (int i = 0; i < 8; i++)
             {
@@ -548,7 +551,7 @@ void Set_flash_read(void)
     flash_read_page(0, case_Temp, &All_Dot, 1);
     for (int i = 0; i < 8; i++)
     {
-        flash_read_page(0, case_Temp, &Jump_Element[i], 2 + i);
+        flash_read_page(0, case_Temp, &Element_Flag[i], 2 + i);
     }   
 
     //Set_Sign is configured in case 3 (flash 16..23), not in XY storage area.

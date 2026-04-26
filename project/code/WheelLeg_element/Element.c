@@ -308,7 +308,7 @@ void Speed_Set(void)
 
 }
 
-int Element_Flag[8] = {0};
+uint32 Element_Flag[8] = {0};
 void Element_Play(void)
 {
     if (Element_Flag[Now_Dot - 1] == 2 && Element_Flag[Now_Dot] == 1 && Now_Dot_Flag == 3 && Jump_Finish_Flag != 1)
