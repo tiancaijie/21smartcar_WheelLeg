@@ -169,6 +169,7 @@ extern float gx_last;
 extern float LegOutput;
 extern int Slow_Flag;
 extern float Hill_Height;
+extern int PWM_Output_Flag;
 float DirectionControl(int EleMode, int NewError);
 extern void SpeedControl(void);
 void PID_InitAll(void);

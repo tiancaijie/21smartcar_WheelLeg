@@ -50,6 +50,8 @@ float LXc[2] = {0};
 float RXc[2] = {0};
 double gnss_dot[2][11] = {0};
 int Jump_Flag = 0;
+int Jump_Element_Count = 0;
+int Element_Permission = 0;
 uint16 JumpChannel_Last = 192;
 int Jump_TestTime = 0;
 int Last_rc_ctrl_s_record = 0;
@@ -70,6 +72,7 @@ FrameHead_Type Find_Head = Find_Off;
 int Jump_Enable_Flag = 0;
 // 通道5上一次状态  保留
 uint16 ch5_last_val = 192;
+uint16 ch4_last_val = 0;
 // **************************** PIT中断函数 ****************************
 void pit0_ch0_isr()                     // 定时器通道 0 周期中断服务函数      
 {
@@ -111,36 +114,52 @@ void pit0_ch0_isr()                     // 定时器通道 0 周期中断服务函数
     
     YawOmegaCtrl();
     PitchOmegaCtrl();
-    // if (Jump_Flag == 0)
+
+    if (uart_receiver.channel[3] == 192)
+    {
+        ch4_last_val = 0;
+    }
+
+    if (uart_receiver.channel[3] != ch4_last_val)
+    {
+        Jump_Element_Count++;
+        if (Jump_Element_Count > 4)
+        {
+            Jump_Element_Count = 1;
+        }
+        ch4_last_val = uart_receiver.channel[3];
+    }
+
+    if (uart_receiver.channel[3] == 192 || uart_receiver.channel[3] == 1792)
+    {
+        Element_Permission ++;
+    }
+    if (Element_Permission > 2)
+    {
+        Element_Permission = 1;
+    }   
+
+    Element_Play();
+    //遥控跳跃
+    // // 1. 检测开关切换 + 跳跃已完成 → 启动跳跃（仅触发一次启动）
+    // if ((uart_receiver.channel[3] == 1792) && (uart_receiver.channel[5] != ch5_last_val) && (Jump_Finish_Flag == 1))
     // {
-    //     RollAngleCtrl();
+    //     Jump_Enable_Flag = 1;      
+    //     Jump_Finish_Flag = 0;      
+    //     ch5_last_val = uart_receiver.channel[5]; 
     // }
-    
-    // if (uart_receiver.channel[3] == 1792 && Jump_Finish_Flag == 0 && uart_receiver.channel[5] == 1792)
+
+    // // 2. 使能开启执行跳跃
+    // if(Jump_Enable_Flag == 1)
     // {
     //     JumpCTRL();
     // }
 
-
-// 1. 检测开关切换 + 跳跃已完成 → 启动跳跃（仅触发一次启动）
-if((uart_receiver.channel[3] == 1792) && (uart_receiver.channel[5] != ch5_last_val) && (Jump_Finish_Flag == 1))
-{
-    Jump_Enable_Flag = 1;      
-    Jump_Finish_Flag = 0;      
-    ch5_last_val = uart_receiver.channel[5]; 
-}
-
-// 2. 使能开启执行跳跃
-if(Jump_Enable_Flag == 1)
-{
-    JumpCTRL();
-}
-
-// 3. 跳跃完全结束后，自动关闭使能，等待下一次触发
-if(Jump_Finish_Flag == 1)
-{
-    Jump_Enable_Flag = 0;
-}
+    // // 3. 跳跃完全结束后，自动关闭使能，等待下一次触发
+    // if(Jump_Finish_Flag == 1)
+    // {
+    //     Jump_Enable_Flag = 0;
+    // }
 
     Speed_Output();
     PWM_Output(&L_leg,&R_leg);

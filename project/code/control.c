@@ -255,39 +255,42 @@ void FiveLink_Opposite(VMC_Data_Type* leg, float LXc, float Yc)
 }
 
 
-
+int PWM_Output_Flag = 0;
 // 输出PWM信号到四个舵机，控制腿部动作
 void PWM_Output(VMC_Data_Type* leg1,VMC_Data_Type* leg2)
 {
-    if (Jump_Flag == 1)
+    if (PWM_Output_Flag == 2)
     {
-        leg1->PWM_Out1 =  (int)(LeftF_CENTER  + Extend_Height);  //(1000/PI*leg1->Theta1*6 + LeftF_CENTER);
-        leg1->PWM_Out2 =  (int)(LeftB_CENTER  - Extend_Height);  //(1000/PI*leg1->Theta2*6 + LeftB_CENTER);
-        leg2->PWM_Out1 =  (int)(RightF_CENTER - Extend_Height); //(1000/PI*leg2->Theta1*6 + RightF_CENTER);
-        leg2->PWM_Out2 =  (int)(RightB_CENTER + Extend_Height); //(1000/PI*leg2->Theta2*6 + RightB_CENTER);
-    }
-        else if (Jump_Flag == 2)
-    {
-        leg1->PWM_Out1 =  (int)(LeftF_CENTER);  //(1000/PI*leg1->Theta1*6 + LeftF_CENTER);
-        leg1->PWM_Out2 =  (int)(LeftB_CENTER);  //(1000/PI*leg1->Theta2*6 + LeftB_CENTER);
-        leg2->PWM_Out1 =  (int)(RightF_CENTER); //(1000/PI*leg2->Theta1*6 + RightF_CENTER);
-        leg2->PWM_Out2 =  (int)(RightB_CENTER); //(1000/PI*leg2->Theta2*6 + RightB_CENTER);
-    }
-        else if (Jump_Flag == 3)
-    {
-        leg1->PWM_Out1 =  (int)(LeftF_CENTER  + Cushion_Height);  //(1000/PI*leg1->Theta1*6 + LeftF_CENTER);
-        leg1->PWM_Out2 =  (int)(LeftB_CENTER  - Cushion_Height);  //(1000/PI*leg1->Theta2*6 + LeftB_CENTER);
-        leg2->PWM_Out1 =  (int)(RightF_CENTER - Cushion_Height); //(1000/PI*leg2->Theta1*6 + RightF_CENTER);
-        leg2->PWM_Out2 =  (int)(RightB_CENTER + Cushion_Height); //(1000/PI*leg2->Theta2*6 + RightB_CENTER);
-    }
-        else if (Jump_Flag == 4)
-    {
-        leg1->PWM_Out1 =  (int)(LeftF_CENTER  + Cushion_Speed);  //(1000/PI*leg1->Theta1*6 + LeftF_CENTER);
-        leg1->PWM_Out2 =  (int)(LeftB_CENTER  - Cushion_Speed);  //(1000/PI*leg1->Theta2*6 + LeftB_CENTER);
-        leg2->PWM_Out1 =  (int)(RightF_CENTER - Cushion_Speed); //(1000/PI*leg2->Theta1*6 + RightF_CENTER);
-        leg2->PWM_Out2 =  (int)(RightB_CENTER + Cushion_Speed); //(1000/PI*leg2->Theta2*6 + RightB_CENTER);
-    }
-        else if (Jump_Flag == 0)
+        if (Jump_Flag == 1)
+        {
+            leg1->PWM_Out1 =  (int)(LeftF_CENTER  + Extend_Height);  //(1000/PI*leg1->Theta1*6 + LeftF_CENTER);
+            leg1->PWM_Out2 =  (int)(LeftB_CENTER  - Extend_Height);  //(1000/PI*leg1->Theta2*6 + LeftB_CENTER);
+            leg2->PWM_Out1 =  (int)(RightF_CENTER - Extend_Height); //(1000/PI*leg2->Theta1*6 + RightF_CENTER);
+            leg2->PWM_Out2 =  (int)(RightB_CENTER + Extend_Height); //(1000/PI*leg2->Theta2*6 + RightB_CENTER);
+        }
+            else if (Jump_Flag == 2)
+        {
+            leg1->PWM_Out1 =  (int)(LeftF_CENTER);  //(1000/PI*leg1->Theta1*6 + LeftF_CENTER);
+            leg1->PWM_Out2 =  (int)(LeftB_CENTER);  //(1000/PI*leg1->Theta2*6 + LeftB_CENTER);
+            leg2->PWM_Out1 =  (int)(RightF_CENTER); //(1000/PI*leg2->Theta1*6 + RightF_CENTER);
+            leg2->PWM_Out2 =  (int)(RightB_CENTER); //(1000/PI*leg2->Theta2*6 + RightB_CENTER);
+        }
+            else if (Jump_Flag == 3)
+        {
+            leg1->PWM_Out1 =  (int)(LeftF_CENTER  + Cushion_Height);  //(1000/PI*leg1->Theta1*6 + LeftF_CENTER);
+            leg1->PWM_Out2 =  (int)(LeftB_CENTER  - Cushion_Height);  //(1000/PI*leg1->Theta2*6 + LeftB_CENTER);
+            leg2->PWM_Out1 =  (int)(RightF_CENTER - Cushion_Height); //(1000/PI*leg2->Theta1*6 + RightF_CENTER);
+            leg2->PWM_Out2 =  (int)(RightB_CENTER + Cushion_Height); //(1000/PI*leg2->Theta2*6 + RightB_CENTER);
+        }
+            else if (Jump_Flag == 4)
+        {
+            leg1->PWM_Out1 =  (int)(LeftF_CENTER  + Cushion_Speed);  //(1000/PI*leg1->Theta1*6 + LeftF_CENTER);
+            leg1->PWM_Out2 =  (int)(LeftB_CENTER  - Cushion_Speed);  //(1000/PI*leg1->Theta2*6 + LeftB_CENTER);
+            leg2->PWM_Out1 =  (int)(RightF_CENTER - Cushion_Speed); //(1000/PI*leg2->Theta1*6 + RightF_CENTER);
+            leg2->PWM_Out2 =  (int)(RightB_CENTER + Cushion_Speed); //(1000/PI*leg2->Theta2*6 + RightB_CENTER);
+        }
+    } 
+    else if (PWM_Output_Flag == 3)
     {
         if (hCtrl.Roll.Output > 0)              //左倾
         {
@@ -298,19 +301,27 @@ void PWM_Output(VMC_Data_Type* leg1,VMC_Data_Type* leg2)
         }
         else                                    //右倾
         {
-            leg1->PWM_Out1 =  (int)(LeftF_CENTER + 150 - hCtrl.Pitch.LegOutput);  //(1000/PI*leg1->Theta1*6 + LeftF_CENTER);
-            leg1->PWM_Out2 =  (int)(LeftB_CENTER - 150 - hCtrl.Pitch.LegOutput);  //(1000/PI*leg1->Theta2*6 + LeftB_CENTER);
-            leg2->PWM_Out1 =  (int)(RightF_CENTER - 150 + hCtrl.Pitch.LegOutput - fabsf(hCtrl.Roll.Output)); //(1000/PI*leg2->Theta1*6 + RightF_CENTER);
-            leg2->PWM_Out2 =  (int)(RightB_CENTER + 150 + hCtrl.Pitch.LegOutput + fabsf(hCtrl.Roll.Output)); //(1000/PI*leg2->Theta2*6 + RightB_CENTER);
-        }        
-        // else                                 //右倾（备用方案）
-        // {
-        //     leg1->PWM_Out1 =  (int)(LeftF_CENTER +250 - hCtrl.Pitch.LegOutput);  //(1000/PI*leg1->Theta1*6 + LeftF_CENTER);
-        //     leg1->PWM_Out2 =  (int)(LeftB_CENTER -250 - hCtrl.Pitch.LegOutput);  //(1000/PI*leg1->Theta2*6 + LeftB_CENTER);
-        //     leg2->PWM_Out1 =  (int)(RightF_CENTER -250 + hCtrl.Pitch.LegOutput - fabsf(hCtrl.Roll.Output)); //(1000/PI*leg2->Theta1*6 + RightF_CENTER);
-        //     leg2->PWM_Out2 =  (int)(RightB_CENTER +250 + hCtrl.Pitch.LegOutput + fabsf(hCtrl.Roll.Output)); //(1000/PI*leg2->Theta2*6 + RightB_CENTER);
-        // }
+            leg1->PWM_Out1 =  (int)(LeftF_CENTER - hCtrl.Pitch.LegOutput);  //(1000/PI*leg1->Theta1*6 + LeftF_CENTER);
+            leg1->PWM_Out2 =  (int)(LeftB_CENTER - hCtrl.Pitch.LegOutput);  //(1000/PI*leg1->Theta2*6 + LeftB_CENTER);
+            leg2->PWM_Out1 =  (int)(RightF_CENTER + hCtrl.Pitch.LegOutput - fabsf(hCtrl.Roll.Output)); //(1000/PI*leg2->Theta1*6 + RightF_CENTER);
+            leg2->PWM_Out2 =  (int)(RightB_CENTER + hCtrl.Pitch.LegOutput + fabsf(hCtrl.Roll.Output)); //(1000/PI*leg2->Theta2*6 + RightB_CENTER);
+        } 
     }
+    else if (PWM_Output_Flag == 4)
+    {
+        leg1->PWM_Out1 =  (int)(LeftF_CENTER +250 - hCtrl.Pitch.LegOutput);  //(1000/PI*leg1->Theta1*6 + LeftF_CENTER);
+        leg1->PWM_Out2 =  (int)(LeftB_CENTER -250 - hCtrl.Pitch.LegOutput);  //(1000/PI*leg1->Theta2*6 + LeftB_CENTER);
+        leg2->PWM_Out1 =  (int)(RightF_CENTER -250 + hCtrl.Pitch.LegOutput); //(1000/PI*leg2->Theta1*6 + RightF_CENTER);
+        leg2->PWM_Out2 =  (int)(RightB_CENTER +250 + hCtrl.Pitch.LegOutput); //(1000/PI*leg2->Theta2*6 + RightB_CENTER);
+    }
+    else
+    {
+        leg1->PWM_Out1 =  (int)(LeftF_CENTER - hCtrl.Pitch.LegOutput);  //(1000/PI*leg1->Theta1*6 + LeftF_CENTER);
+        leg1->PWM_Out2 =  (int)(LeftB_CENTER - hCtrl.Pitch.LegOutput);  //(1000/PI*leg1->Theta2*6 + LeftB_CENTER);
+        leg2->PWM_Out1 =  (int)(RightF_CENTER + hCtrl.Pitch.LegOutput); //(1000/PI*leg2->Theta1*6 + RightF_CENTER);
+        leg2->PWM_Out2 =  (int)(RightB_CENTER + hCtrl.Pitch.LegOutput); //(1000/PI*leg2->Theta2*6 + RightB_CENTER);
+    }
+    
 
     leg1->PWM_Out1 = Amplitude_Limit(leg1->PWM_Out1, 2220, 6400);
     leg1->PWM_Out2 = Amplitude_Limit(leg1->PWM_Out2, 1900, 6000);

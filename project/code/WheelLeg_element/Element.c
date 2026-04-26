@@ -75,7 +75,8 @@ void Single_BridgeStateCTRL(void)
 
 int JumpTimeCount = 0;
 int JumpOff = 0;
-int Jump_Finish_Flag = 1;
+// int Jump_Finish_Flag = 1;        //遥控跳跃
+int Jump_Finish_Flag = 0;           //只跳一次
 int Jump_Finish_Flag1 = 0;
 uint16 Extend_time = 80;
 uint16 Shrink_time = 200;
@@ -248,28 +249,24 @@ float Speed_Compensation = 0;
 void Speed_Set(void)
 {
     //速度1.0 减速
-    // if(Distance < 0.2 && fabsf(hCtrl.Pitch.ExpectSpeed_Act) > 550)
-    // {
-    //     hCtrl.Pitch.ExpectSpeed_Act = 0;
-    //     Now_Dot_Flag++;
-    // }
-    // else if(Distance < 0.1)
-    // {
-    //     hCtrl.Pitch.ExpectSpeed_Act = 0;
-    //     Now_Dot_Flag++;
-    // }
-    // else if(Distance < 2.0 && fabsf(hCtrl.Pitch.ExpectSpeed_Act) > 550)
-    // {
-    //     hCtrl.Pitch.ExpectSpeed_Act =  Distance / 2 * hCtrl.Pitch.ExpectSpeed_Exp;
-    // }
-    // else if(Distance < 1.0)
-    // {
-    //     hCtrl.Pitch.ExpectSpeed_Act =  Distance * hCtrl.Pitch.ExpectSpeed_Exp;
-    // }
-    // else
-    // {
-    //     hCtrl.Pitch.ExpectSpeed_Act = hCtrl.Pitch.ExpectSpeed_Exp;
-    // }
+    if(Distance < 0.2 && fabsf(hCtrl.Pitch.ExpectSpeed_Act) > 550)
+    {
+        hCtrl.Pitch.ExpectSpeed_Act = 0;
+        Now_Dot_Flag++;
+    }
+    else if(Distance < 0.1)
+    {
+        hCtrl.Pitch.ExpectSpeed_Act = 0;
+        Now_Dot_Flag++;
+    }
+    else if(Distance < 2.0 && fabsf(hCtrl.Pitch.ExpectSpeed_Act) > 550)
+    {
+        hCtrl.Pitch.ExpectSpeed_Act =  Distance / 2 * hCtrl.Pitch.ExpectSpeed_Exp;
+    }
+    else if(Distance < 1.0)
+    {
+        hCtrl.Pitch.ExpectSpeed_Act =  Distance * hCtrl.Pitch.ExpectSpeed_Exp;
+    }
 
     //速度2.0 加反转补偿
     // if(Distance < 0.2 && fabsf(hCtrl.Pitch.ExpectSpeed_Act) > 550)
@@ -293,22 +290,41 @@ void Speed_Set(void)
     //     Speed_Compensation = -hCtrl.Pitch.LegOutput * 1.5;
     // }
 
-    //速度3.0 尝试ing
-    if(Distance < 1.0 && fabsf(hCtrl.Pitch.ExpectSpeed_Act) > 550)
-    {
-        hCtrl.Pitch.ExpectSpeed_Act =  Distance * hCtrl.Pitch.ExpectSpeed_Exp;
-        Speed_Compensation = -hCtrl.Pitch.LegOutput * 2.5;
-        if(Distance < 0.2)
-        {
-            hCtrl.Pitch.ExpectSpeed_Act = 0;
-            Now_Dot_Flag++;
-        }
-    }
+    // //速度3.0 尝试ing
+    // if(Distance < 1.0 && fabsf(hCtrl.Pitch.ExpectSpeed_Act) > 550)
+    // {
+    //     hCtrl.Pitch.ExpectSpeed_Act =  Distance * hCtrl.Pitch.ExpectSpeed_Exp;
+    //     Speed_Compensation = -hCtrl.Pitch.LegOutput * 2.5;
+    //     if(Distance < 0.2)
+    //     {
+    //         hCtrl.Pitch.ExpectSpeed_Act = 0;
+    //         Now_Dot_Flag++;
+    //     }
+    // }
     else
     {
         hCtrl.Pitch.ExpectSpeed_Act = hCtrl.Pitch.ExpectSpeed_Exp;
     }
 
+}
+
+int Element_Flag[8] = {0};
+void Element_Play(void)
+{
+    if (Element_Flag[Now_Dot - 1] == 2 && Element_Flag[Now_Dot] == 1 && Now_Dot_Flag == 3 && Jump_Finish_Flag != 1)
+    {
+        JumpCTRL();
+        PWM_Output_Flag = 2;
+    }
+    else if (Element_Flag[Now_Dot - 1] == 3 && Element_Flag[Now_Dot] == 1 && Now_Dot_Flag == 3)
+    {
+        RollAngleCtrl();
+        PWM_Output_Flag = 3;
+    }
+    else if (Element_Flag[Now_Dot - 1] == 4 && Element_Flag[Now_Dot] == 1 && Now_Dot_Flag == 3)
+    {
+        PWM_Output_Flag = 4;
+    }
 }
 
 // 目标点间导航与角度计算

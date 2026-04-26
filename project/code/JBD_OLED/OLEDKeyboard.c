@@ -35,6 +35,7 @@ int SavePicture = 0;
 uint8 PWMTest[4] = {0};
 uint32 Balance_PID[8];
 uint32 Run_SET[8];
+uint32 Jump_Element[8];
 uint32 Control_SET[8];
 float Set_Angle[8];
 uint32 Set_Sign_X[8];
@@ -357,10 +358,6 @@ void Get_Point(void)
 
             All_Dot = (uint32)input;
 
-            Temp = 72;
-            flash_erase_page(0, Temp);
-            flash_write_page(0, Temp, &All_Dot, 1);
-
             OLED_CLS();
 
             int i = 0;
@@ -391,6 +388,11 @@ void Get_Point(void)
                 Set_X_Row [i] = (uint32)(fabs(Set_X[i] * 100));
                 Set_Y_Row [i] = (uint32)(fabs(Set_Y[i] * 100));
 
+                if (Element_Permission == 2)
+                {
+                    Jump_Element[i] = Jump_Element_Count;
+                }
+
                 i++; // 下一个点
                 Navigation.MarkPot.Point_Order++;
                 OLED_CLS();
@@ -410,6 +412,15 @@ void Get_Point(void)
 
                 flash_erase_page(0, Temp + 4 * i + 3);
                 flash_write_page(0, Temp + 4 * i + 3, &Set_Y_Row[i], 1);
+            }
+
+            Temp = 72;
+            flash_erase_page(0, Temp);
+            flash_write_page(0, Temp, &All_Dot, 1);
+
+            for (int i = 0; i < 8; i++)
+            {
+                flash_write_page(0, Temp, &Jump_Element[i], 2 + i);
             }
 
             OLED_CLS();
@@ -535,6 +546,10 @@ void Set_flash_read(void)
 
     case_Temp = 72;
     flash_read_page(0, case_Temp, &All_Dot, 1);
+    for (int i = 0; i < 8; i++)
+    {
+        flash_read_page(0, case_Temp, &Jump_Element[i], 2 + i);
+    }   
 
     //Set_Sign is configured in case 3 (flash 16..23), not in XY storage area.
     case_Temp = 16;

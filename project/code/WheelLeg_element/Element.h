@@ -31,6 +31,8 @@ extern uint8 Bridge_Type;
 extern uint8 Now_Dot;
 extern uint8 Now_Dot_Flag;
 extern uint32 All_Dot;
+extern uint32 Jump_Element[8];
+extern int Element_Flag[8];
 extern int JumpOff;
 extern int Jump_Finish_Flag;
 extern int Jump_Finish_Flag1;
@@ -58,4 +60,5 @@ void Cut_offState(void);
 void Recover(void);
 void Run_Start(void);
 void Reset_StartPot(void);
+void Element_Play(void);
 #endif /* CODE_WHEELLEG_ELEMENT_ELEMENT_H_ */

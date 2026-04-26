@@ -4,17 +4,17 @@
 #include "MahonyAHRS.h"
 int giWheelSpeed_Old = 0,giLeftWheelSpeed_old = 0,giRightWheelSpeed_old = 0;
 int giWheelSpeed = 0,giRightWheelSpeed = 0,giLeftWheelSpeed = 0, SpeedMax, SpeedMid, SpeedMin;
-int SP_RightFiltering[2] = {0};             // 右轮历史速度滤波
-int SP_LeftFiltering[2] = {0};              // 左轮历史速度滤波
+int SP_RightFiltering[2] = {0};             //鍘嗗彶锟�?
+int SP_LeftFiltering[2] = {0};              //鍘嗗彶锟�?
 int Change[2];
 int SpeedHill, SpeedCircle;
-typedef union// float与long互转联合体
+typedef union//锟斤拷锟斤拷锟斤拷转锟斤拷锟斤拷锟酵癸拷锟斤拷锟斤拷
 {
   float fdata;
   unsigned long ldata;
 }FloatLongType;
 
-void Float_to_Byte(float f,unsigned char byte[])// float转4字节数组
+void Float_to_Byte(float f,unsigned char byte[])//锟斤拷锟斤拷锟斤拷转4锟街斤拷
 {
     FloatLongType fl;
     fl.fdata=f;
@@ -46,11 +46,19 @@ void GetSpeed (void)
        encoder_clear_count(TC_CH20_ENCODER);
 }
 
-/**
- * @brief 清空数据
- * @param PTemp 需要清空的数组起始地址
- * @param PEnd  需要清空的数组结束地址
- */
+/*************************************************
+Function: ClearArrayChar
+Description: 娓呯┖鏁版嵁
+Calls: 锟�?
+Called By: main.c
+Table Accessed: 锟�?
+Table Updated: 锟�?
+Input: 闇€瑕佹竻闆剁殑鏁扮粍棣栧湴鍧€
+       闇€瑕佹竻闆剁殑鏁扮粍灏惧湴鍧€
+Output: 锟�?
+Return: 锟�?
+Others:锟�?
+*************************************************/
 void ClearArrayChar(unsigned char *PTemp, unsigned char *PEnd)
 {
     while (PTemp <= PEnd)
@@ -95,8 +103,10 @@ void ClearArrayfloat(float *PTemp, float *PEnd)
 }
 
 /**
- * @brief 平方根计算
- */
+** Function: m_sqrt
+** Description: 姝ｆ暟寮€锟�?
+** Others:锟�?
+**/
 unsigned int m_sqrt(unsigned int x)
 {
    unsigned char ans = 0,p = 0x80;
@@ -111,11 +121,13 @@ unsigned int m_sqrt(unsigned int x)
    }
    return(ans);
 }
-/**
- * @brief 求平方
- * @param arg 输入参数
- * @return arg * arg
- */
+/************************************************
+ * Function: Square
+ * Description: 姹傛暟锟�?骞虫柟
+ * Calls: None
+ * Input: arg
+ * Return: arg * arg;
+ ************************************************/
 int Square_int(int arg)
 {
     return arg * arg;
@@ -125,10 +137,10 @@ float Square_float(float arg)
     return arg * arg;
 }
 /**
- * @brief 线性插值补全
- * @param Ptemp 数组指针
- * @param End_Row 需要插值的数组长度
- */
+** Function: Linear_Interpolation
+** Description: 绾挎€ф彃锟�?
+** Others:*Ptemp锛氭暟缁勭殑璧凤拷?锟芥寚閽堬紝End_Row锛氫竴鍏辫繘琛岋拷?锟藉皯锟�?
+**/
 void Linear_Interpolation(int *Ptemp,int End_Row)
 {
     int i = 0,j = 0,k = 0;
@@ -155,8 +167,10 @@ void Linear_Interpolation(int *Ptemp,int End_Row)
     }
 }
 /**
- * @brief 参数发送
- */
+** Function: ParameterSent
+** Description: 锟斤拷位锟斤拷锟斤拷锟斤拷锟斤拷
+** Others:锟斤拷
+**/
 void ParameterSent(void)
 {
     int itmp;
@@ -177,13 +191,13 @@ void ParameterSent(void)
     uart_write_byte(UART_2, utmp2);
     uart_write_byte(UART_2, utmp1);
 
-    itmp = (signed int)(dbg[0]);//期望速度L
+    itmp = (signed int)(dbg[0]);//鏈熸湜閫熷害L
     utmp1 = (itmp) >> 8;
     utmp2 = (itmp) & 0x00ff;
     uart_write_byte(UART_2, utmp2);
     uart_write_byte(UART_2, utmp1);
 
-    itmp = (signed int)(dbg[1]);//期望速度R
+    itmp = (signed int)(dbg[1]);//鏈熸湜閫熷害R
     utmp1 = (itmp) >> 8;
     utmp2 = (itmp) & 0x00ff;
     uart_write_byte(UART_2, utmp2);
@@ -230,8 +244,8 @@ int uartget = 0;
 
 void VOFA_Receive_callback (uart_index_enum uart_n)
 {
-    uint8 dat;// 记录当前项
-    // 将分段的串口数据记录到数组中
+    uint8 dat;//璁板綍褰撲笅鐨勯」
+    //鎶婂垎鍧楃殑骞挎挱鎶ユ枃璁板綍鍏ユ暟缁勪腑
     while(uart_query_byte(uart_n, &dat) && Vofa_Record < 2 )
     {
         Vofa_Get[Vofa_Record] = dat;
@@ -311,7 +325,7 @@ void itoa(int32_t num, char* buffer) {
     char* ptr = buffer;
     char* end;
 
-    // 处理负数
+    // 澶勭悊璐熸暟
     if (num < 0) {
         isNegative = 1;
         n = (uint32_t)(-num);
@@ -319,19 +333,19 @@ void itoa(int32_t num, char* buffer) {
         n = (uint32_t)num;
     }
 
-    // 生成逆序字符串
+    // 鐢熸垚鍙嶅悜瀛楋拷?锟戒覆
     do {
         *ptr++ = (n % 10) + '0';
         n /= 10;
     } while (n > 0);
 
-    // 添加负号
+    // 娣诲姞璐熷彿
     if (isNegative) {
         *ptr++ = '-';
     }
-    *ptr = '\0'; // 结束字符串
+    *ptr = '\0'; // 缁堬拷?锟藉瓧绗︿覆
 
-    // 翻转字符串
+    // 鍙嶈浆瀛楋拷?锟戒覆
     end = ptr - 1;
     ptr = buffer;
     while (ptr < end) {
@@ -375,10 +389,10 @@ void FOC_SendControl(FOCcontrol_Type FOC_Send,int16 Left_SpeedPWM,int16 Right_Sp
             break;
         }
     }
-    data[6] = 0;                                            // 校验和清零
+    data[6] = 0;                                            // 鍜屾牎楠屾竻
     for(int i = 0; i < 6; i ++)
     {
-        data[6] += data[i];         // 计算校验和
+        data[6] += data[i];         // 璁＄畻鏍￠獙锟�?
     }
     uart_write_buffer(UART_1, data, 7);
 }
