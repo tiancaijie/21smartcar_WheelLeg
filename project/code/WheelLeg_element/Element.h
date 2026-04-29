@@ -33,6 +33,7 @@ extern uint8 Now_Dot_Flag;
 extern uint32 All_Dot;
 extern uint32 Jump_Element[8];
 extern uint32 Element_Flag[8];
+extern int Roll_Allance;
 extern int JumpOff;
 extern int Jump_Finish_Flag;
 extern int Jump_Finish_Flag1;

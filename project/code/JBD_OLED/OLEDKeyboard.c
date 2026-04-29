@@ -357,9 +357,6 @@ void Get_Point(void)
             }
 
             All_Dot = (uint32)input;
-            Temp = 72;
-            flash_erase_page(0, Temp);
-            flash_write_page(0, Temp, &All_Dot, 1);
 
             OLED_CLS();
 
@@ -391,11 +388,11 @@ void Get_Point(void)
                 Set_X_Row [i] = (uint32)(fabs(Set_X[i] * 100));
                 Set_Y_Row [i] = (uint32)(fabs(Set_Y[i] * 100));
 
-                if (Element_Permission == 1)
-                {
+                // if (Element_Permission == 2)
+                // {
                     Jump_Element[i] = Jump_Element_Count;
-                }
-
+                // }
+                    Jump_Element_Count = 1;
                 i++; // 下一个点
                 Navigation.MarkPot.Point_Order++;
                 OLED_CLS();
@@ -417,14 +414,23 @@ void Get_Point(void)
                 flash_write_page(0, Temp + 4 * i + 3, &Set_Y_Row[i], 1);
             }
 
-            Temp = 72;
+            // Temp = 72;
             // flash_erase_page(0, Temp);
             // flash_write_page(0, Temp, &All_Dot, 1);
 
-            for (int i = 0; i < 8; i++)
+            // for (int i = 0; i < 8; i++)
+            // {
+            //     flash_write_page(0, Temp, &Jump_Element[i], 2 + i);
+            // }
+            flash_buffer_clear();
+
+            flash_union_buffer[0].uint32_type = All_Dot;
+            for(int i = 0; i < 8; i++)
             {
-                flash_write_page(0, Temp, &Jump_Element[i], 2 + i);
+                flash_union_buffer[1 + i].uint32_type = Jump_Element[i];
             }
+
+            flash_write_page_from_buffer(0, 72, 9);         //9个字
 
             OLED_CLS();
            // Balance_flash_read();
@@ -432,7 +438,7 @@ void Get_Point(void)
         }
         case 3:
         {
-              //Balance_flash_read();
+            //Balance_flash_read();
             break;
         }
     }
@@ -547,12 +553,22 @@ void Set_flash_read(void)
         Set_Guidance_Y[i] = Set_Y_Row[i] * 0.01f * (Set_Sign_Y[i] == 0 ? (1):(-1));
     }
 
-    case_Temp = 72;
-    flash_read_page(0, case_Temp, &All_Dot, 1);
-    for (int i = 0; i < 8; i++)
+    // case_Temp = 72;
+    // flash_read_page(0, case_Temp, &All_Dot, 1);
+    // for (int i = 0; i < 8; i++)
+    // {
+    //     flash_read_page(0, case_Temp, &Element_Flag[i], 2 + i);
+    // }   
+
+    // 先读整页到缓冲区
+    flash_read_page_to_buffer(0, 72, 9);  // 读 9 个字到 flash_union_buffer
+
+    // 从缓冲区取出数据
+    All_Dot = flash_union_buffer[0].uint32_type;
+    for(int i = 0; i < 8; i++)
     {
-        flash_read_page(0, case_Temp, &Element_Flag[i], 2 + i);
-    }   
+        Element_Flag[i] = flash_union_buffer[1 + i].uint32_type;
+    }
 
     //Set_Sign is configured in case 3 (flash 16..23), not in XY storage area.
     case_Temp = 16;

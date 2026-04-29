@@ -71,7 +71,8 @@ FrameHead_Type Find_Head = Find_Off;
 // 跳跃执行使能标志  新增
 int Jump_Enable_Flag = 0;
 // 通道5上一次状态  保留
-uint16 ch5_last_val = 192;
+// uint16 ch5_last_val = 192;           //遥控跳跃
+uint16 ch5_last_val = 0;
 uint16 ch4_last_val = 0;
 // **************************** PIT中断函数 ****************************
 void pit0_ch0_isr()                     // 定时器通道 0 周期中断服务函数      
@@ -91,7 +92,7 @@ void pit0_ch0_isr()                     // 定时器通道 0 周期中断服务函数
     if(hCtrl.Yaw.BalancePoint == 0 && Switch_On)
     {
         hCtrl.Yaw.BalancePoint = IMUData.yaw_mahony;
-        hCtrl.Roll.BalancePoint = IMUData.roll_mahony;
+        //hCtrl.Roll.BalancePoint = IMUData.roll_mahony;
     }
 
     if (ms20 >= 10)           //20ms
@@ -109,36 +110,41 @@ void pit0_ch0_isr()                     // 定时器通道 0 周期中断服务函数
         YawAngleCtrl();                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
         PitchAngleCtrl();
         Pitch_LegCtrl(); 
+        RollAngleCtrl();
         ms4=0;
     }
     
     YawOmegaCtrl();
     PitchOmegaCtrl();
+    // if (uart_receiver.channel[3] == 192)
+    // {
+    //     ch4_last_val = 0;
+    //     ch5_last_val = 0;
+    // }
 
-    if (uart_receiver.channel[3] == 192)
-    {
-        ch4_last_val = 0;
-    }
-
-    if (uart_receiver.channel[3] != ch4_last_val)
+    if (uart_receiver.channel[4] != ch4_last_val)
     {
         Jump_Element_Count++;
         if (Jump_Element_Count > 4)
         {
             Jump_Element_Count = 1;
         }
-        ch4_last_val = uart_receiver.channel[3];
+        ch4_last_val = uart_receiver.channel[4];
     }
 
-    if (uart_receiver.channel[6] != ch5_last_val)
-    {
-        Element_Permission ++;
-        ch5_last_val = uart_receiver.channel[6];
-        if (Element_Permission > 1)
-        {
-            Element_Permission = 0;
-        }
-    }
+    // if (uart_receiver.channel[5] != ch5_last_val)
+    // {
+    //     Element_Permission ++;
+    //     ch5_last_val = uart_receiver.channel[5];
+    //     if (Element_Permission == 2)
+    //     {
+    //         Jump_Element_Count = 0;
+    //     }
+    //     else if (Element_Permission > 2)
+    //     {
+    //         Element_Permission = 0;
+    //     }
+    // }
     // if (Element_Permission > 2)
     // {
     //     Element_Permission = 1;

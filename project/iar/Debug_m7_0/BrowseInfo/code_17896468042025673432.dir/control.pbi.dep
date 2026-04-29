@@ -1,5 +1,5 @@
-C:\Users\xsj20\21smartcar_WheelLeg\project\iar\Debug_m7_0\BrowseInfo\code_17896468042025673432.dir\fun.pbi: \
-  C:\Users\xsj20\21smartcar_WheelLeg\project\code\fun.c \
+C:\Users\xsj20\21smartcar_WheelLeg\project\iar\Debug_m7_0\BrowseInfo\code_17896468042025673432.dir\control.pbi: \
+  C:\Users\xsj20\21smartcar_WheelLeg\project\code\control.c \
   C:\Users\xsj20\21smartcar_WheelLeg\project\iar\project_config\..\..\..\libraries\zf_common\zf_common_headfile.h \
   D:\IAR\IAR\arm\inc\c\stdio.h D:\IAR\IAR\arm\inc\c\ycheck.h \
   D:\IAR\IAR\arm\inc\c\yvals.h D:\IAR\IAR\arm\inc\c\DLib_Defaults.h \
@@ -233,4 +233,5 @@ C:\Users\xsj20\21smartcar_WheelLeg\project\iar\Debug_m7_0\BrowseInfo\code_178964
   C:\Users\xsj20\21smartcar_WheelLeg\project\iar\project_config\..\..\code\JBD_MAP\Map.h \
   C:\Users\xsj20\21smartcar_WheelLeg\project\code\control.h \
   C:\Users\xsj20\21smartcar_WheelLeg\project\code\pid.h \
-  C:\Users\xsj20\21smartcar_WheelLeg\project\code\Compute.h
+  C:\Users\xsj20\21smartcar_WheelLeg\project\code\Compute.h \
+  C:\Users\xsj20\21smartcar_WheelLeg\project\code\small_driver_uart_control.h

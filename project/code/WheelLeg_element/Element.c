@@ -81,7 +81,7 @@ int Jump_Finish_Flag1 = 0;
 uint16 Extend_time = 80;
 uint16 Shrink_time = 200;
 uint16 Cushion_time = 240;
-uint16 Over_time = 320;
+uint16 Over_time = 350;//320;
 float Extend_Height = 2600;
 float Shrink_Height = 0.075;
 float Cushion_Height = 1000;
@@ -248,25 +248,25 @@ float Speed_Compensation = 0;
 // 速度控制设置
 void Speed_Set(void)
 {
-    //速度1.0 减速
-    if(Distance < 0.2 && fabsf(hCtrl.Pitch.ExpectSpeed_Act) > 550)
-    {
-        hCtrl.Pitch.ExpectSpeed_Act = 0;
-        Now_Dot_Flag++;
-    }
-    else if(Distance < 0.1)
-    {
-        hCtrl.Pitch.ExpectSpeed_Act = 0;
-        Now_Dot_Flag++;
-    }
-    else if(Distance < 2.0 && fabsf(hCtrl.Pitch.ExpectSpeed_Act) > 550)
-    {
-        hCtrl.Pitch.ExpectSpeed_Act =  Distance / 2 * hCtrl.Pitch.ExpectSpeed_Exp;
-    }
-    else if(Distance < 1.0)
-    {
-        hCtrl.Pitch.ExpectSpeed_Act =  Distance * hCtrl.Pitch.ExpectSpeed_Exp;
-    }
+    // //速度1.0 减速
+    // if(Distance < 0.2 && fabsf(hCtrl.Pitch.ExpectSpeed_Act) > 550)
+    // {
+    //     hCtrl.Pitch.ExpectSpeed_Act = 0;
+    //     Now_Dot_Flag++;
+    // }
+    // else if(Distance < 0.1)
+    // {
+    //     hCtrl.Pitch.ExpectSpeed_Act = 0;
+    //     Now_Dot_Flag++;
+    // }
+    // else if(Distance < 2.0 && fabsf(hCtrl.Pitch.ExpectSpeed_Act) > 550)
+    // {
+    //     hCtrl.Pitch.ExpectSpeed_Act =  Distance / 2 * hCtrl.Pitch.ExpectSpeed_Exp;
+    // }
+    // else if(Distance < 1.0)
+    // {
+    //     hCtrl.Pitch.ExpectSpeed_Act =  Distance * hCtrl.Pitch.ExpectSpeed_Exp;
+    // }
 
     //速度2.0 加反转补偿
     // if(Distance < 0.2 && fabsf(hCtrl.Pitch.ExpectSpeed_Act) > 550)
@@ -301,6 +301,30 @@ void Speed_Set(void)
     //         Now_Dot_Flag++;
     //     }
     // }
+
+    //调试连续走，不停
+    if(Distance < 0.2 && fabsf(hCtrl.Pitch.ExpectSpeed_Act) > 550)
+    {
+        hCtrl.Pitch.ExpectSpeed_Act = hCtrl.Pitch.ExpectSpeed_Exp / 2;
+        Now_Dot_Flag++;
+    }
+    // else if(Distance < 1.0)
+    // {
+    //     hCtrl.Pitch.ExpectSpeed_Act = hCtrl.Pitch.ExpectSpeed_Exp / 2;
+    //     //Now_Dot_Flag++;
+    // }
+    else if(Distance < 0.2)
+    {
+        Now_Dot_Flag++;
+    }
+    // else if(Distance < 2.0 && fabsf(hCtrl.Pitch.ExpectSpeed_Act) > 550)
+    // {
+    //     hCtrl.Pitch.ExpectSpeed_Act =  Distance / 2 * hCtrl.Pitch.ExpectSpeed_Exp;
+    // }
+    // else if(Distance < 1.0)
+    // {
+    //     hCtrl.Pitch.ExpectSpeed_Act =  Distance * hCtrl.Pitch.ExpectSpeed_Exp;
+    // }
     else
     {
         hCtrl.Pitch.ExpectSpeed_Act = hCtrl.Pitch.ExpectSpeed_Exp;
@@ -309,21 +333,30 @@ void Speed_Set(void)
 }
 
 uint32 Element_Flag[8] = {0};
+int Roll_Allance = 0;
 void Element_Play(void)
 {
-    if (Element_Flag[Now_Dot - 1] == 2 && Element_Flag[Now_Dot] == 1 && Now_Dot_Flag == 3 && Jump_Finish_Flag != 1)
+    if (Element_Flag[Now_Dot - 1] == 2 && Element_Flag[Now_Dot] == 1 && Jump_Finish_Flag != 1)
     {
         JumpCTRL();
         PWM_Output_Flag = 2;
     }
-    else if (Element_Flag[Now_Dot - 1] == 3 && Element_Flag[Now_Dot] == 1 && Now_Dot_Flag == 3)
+    else if (Element_Flag[Now_Dot - 1] == 3 && Element_Flag[Now_Dot] == 1)
     {
-        RollAngleCtrl();
+        if (Roll_Allance == 0)
+        {
+            hCtrl.Roll.BalancePoint = IMUData.roll_mahony;
+            Roll_Allance = 1;
+        }
         PWM_Output_Flag = 3;
     }
-    else if (Element_Flag[Now_Dot - 1] == 4 && Element_Flag[Now_Dot] == 1 && Now_Dot_Flag == 3)
+    else if (Element_Flag[Now_Dot - 1] == 4 && Element_Flag[Now_Dot] == 1)
     {
         PWM_Output_Flag = 4;
+    }
+    else
+    {
+        PWM_Output_Flag = 1;
     }
 }
 

@@ -1,5 +1,5 @@
-C:\Users\xsj20\21smartcar_WheelLeg\project\iar\Debug_m7_0\BrowseInfo\code_17896468042025673432.dir\fun.pbi: \
-  C:\Users\xsj20\21smartcar_WheelLeg\project\code\fun.c \
+C:\Users\xsj20\21smartcar_WheelLeg\project\iar\Debug_m7_0\BrowseInfo\Element_10143943319297899650.dir\Element.pbi: \
+  C:\Users\xsj20\21smartcar_WheelLeg\project\code\WheelLeg_element\Element.c \
   C:\Users\xsj20\21smartcar_WheelLeg\project\iar\project_config\..\..\..\libraries\zf_common\zf_common_headfile.h \
   D:\IAR\IAR\arm\inc\c\stdio.h D:\IAR\IAR\arm\inc\c\ycheck.h \
   D:\IAR\IAR\arm\inc\c\yvals.h D:\IAR\IAR\arm\inc\c\DLib_Defaults.h \
@@ -213,11 +213,11 @@ C:\Users\xsj20\21smartcar_WheelLeg\project\iar\Debug_m7_0\BrowseInfo\code_178964
   C:\Users\xsj20\21smartcar_WheelLeg\project\iar\project_config\..\..\..\libraries\zf_device\zf_device_wifi_spi.h \
   C:\Users\xsj20\21smartcar_WheelLeg\project\iar\project_config\..\..\..\libraries\zf_device\zf_device_wifi_uart.h \
   C:\Users\xsj20\21smartcar_WheelLeg\project\iar\project_config\..\..\..\libraries\zf_device\zf_device_wireless_uart.h \
-  C:\Users\xsj20\21smartcar_WheelLeg\project\code\small_driver_uart_control.h \
+  C:\Users\xsj20\21smartcar_WheelLeg\project\iar\project_config\..\..\code\small_driver_uart_control.h \
   C:\Users\xsj20\21smartcar_WheelLeg\project\iar\project_config\..\..\..\libraries\zf_components\seekfree_assistant.h \
   C:\Users\xsj20\21smartcar_WheelLeg\project\iar\project_config\..\..\..\libraries\zf_components\seekfree_assistant_interface.h \
-  C:\Users\xsj20\21smartcar_WheelLeg\project\code\pid.h \
-  C:\Users\xsj20\21smartcar_WheelLeg\project\code\init.h \
+  C:\Users\xsj20\21smartcar_WheelLeg\project\iar\project_config\..\..\code\pid.h \
+  C:\Users\xsj20\21smartcar_WheelLeg\project\iar\project_config\..\..\code\init.h \
   C:\Users\xsj20\21smartcar_WheelLeg\project\iar\project_config\..\..\user\isr.h \
   C:\Users\xsj20\21smartcar_WheelLeg\project\iar\project_config\..\..\code\JBD_OLED\CH455.h \
   C:\Users\xsj20\21smartcar_WheelLeg\project\iar\project_config\..\..\code\JBD_OLED\OLED.h \
@@ -226,11 +226,12 @@ C:\Users\xsj20\21smartcar_WheelLeg\project\iar\Debug_m7_0\BrowseInfo\code_178964
   C:\Users\xsj20\21smartcar_WheelLeg\project\iar\project_config\..\..\code\JBD_OLED\OLEDKeyboard.h \
   C:\Users\xsj20\21smartcar_WheelLeg\project\iar\project_config\..\..\code\JBD_OLED\OLEDFun.h \
   C:\Users\xsj20\21smartcar_WheelLeg\project\iar\project_config\..\..\code\JBD_OLED\ssd1306.h \
-  C:\Users\xsj20\21smartcar_WheelLeg\project\code\obstacle.h \
-  C:\Users\xsj20\21smartcar_WheelLeg\project\code\fun.h \
-  C:\Users\xsj20\21smartcar_WheelLeg\project\iar\project_config\..\..\code\WheelLeg_element\Element.h \
+  C:\Users\xsj20\21smartcar_WheelLeg\project\iar\project_config\..\..\code\obstacle.h \
+  C:\Users\xsj20\21smartcar_WheelLeg\project\iar\project_config\..\..\code\fun.h \
+  C:\Users\xsj20\21smartcar_WheelLeg\project\code\WheelLeg_element\Element.h \
   C:\Users\xsj20\21smartcar_WheelLeg\project\iar\project_config\..\..\code\JBD_IMU\MahonyAHRS.h \
   C:\Users\xsj20\21smartcar_WheelLeg\project\iar\project_config\..\..\code\JBD_MAP\Map.h \
-  C:\Users\xsj20\21smartcar_WheelLeg\project\code\control.h \
-  C:\Users\xsj20\21smartcar_WheelLeg\project\code\pid.h \
-  C:\Users\xsj20\21smartcar_WheelLeg\project\code\Compute.h
+  C:\Users\xsj20\21smartcar_WheelLeg\project\iar\project_config\..\..\code\control.h \
+  C:\Users\xsj20\21smartcar_WheelLeg\project\iar\project_config\..\..\code\pid.h \
+  C:\Users\xsj20\21smartcar_WheelLeg\project\iar\project_config\..\..\code\Compute.h \
+  C:\Users\xsj20\21smartcar_WheelLeg\project\code\WheelLeg_element\Element.h
