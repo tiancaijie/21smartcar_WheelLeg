@@ -295,7 +295,7 @@ void VOFA_ParameterSent(uart_index_enum uart_n)
 
     SendValue[0].floatValue = (float)Element_Flag[Now_Dot];
     SendValue[1].floatValue = (float)PWM_Output_Flag;
-    SendValue[2].floatValue = (float)Jump_Finish_Flag;
+    SendValue[2].floatValue = (float)IMUData.roll_mahony;
     SendValue[3].floatValue = (float)gx_last;
     SendValue[4].floatValue = (float)Now_Dot;
     SendValue[5].floatValue = (float)Element_Flag[1];

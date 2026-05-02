@@ -410,22 +410,22 @@ void Run_Start(void)
         P_to_P();
         yaw_err = Expect_Angle + IMUData.sum_yaw_mahony;
 
-        if(Segment_Run_Enabled == 0)
-        {
-            if(ABS(yaw_err) < 0.5)
-            {
-                Segment_Run_Enabled = 1;
-            }
-            else
-            {
-                hCtrl.Pitch.ExpectSpeed_Act = 0;
-            }
-        }
+        // if(Segment_Run_Enabled == 0)
+        // {
+        //     if(ABS(yaw_err) < 0.5)
+        //     {
+        //         Segment_Run_Enabled = 1;
+        //     }
+        //     else
+        //     {
+        //         hCtrl.Pitch.ExpectSpeed_Act = 0;
+        //     }
+        // }
 
-        if(Segment_Run_Enabled)
-        {
+        // if(Segment_Run_Enabled)
+        // {
             Speed_Set();
-        }
+        // }
     }
     if(Now_Dot_Flag == 3 && Now_Dot < All_Dot)
     {
@@ -433,7 +433,7 @@ void Run_Start(void)
         State_get_count = 0;
         Start_Latitude = 0;
         Start_Longitude = 0;
-        Segment_Run_Enabled = 0;
+        // Segment_Run_Enabled = 0;
         Now_Dot++;
     }
 }

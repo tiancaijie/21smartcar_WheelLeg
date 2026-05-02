@@ -578,7 +578,7 @@ void Set_flash_read(void)
     }
         PID_RollAngle.kp = Set_Sign[arr_Temp++] * 1;
         PID_RollAngle.ki = Set_Sign[arr_Temp++] * 0.01;
-        PID_RollAngle.kd = Set_Sign[arr_Temp] * 0.1;
+        PID_RollAngle.kd = Set_Sign[arr_Temp] * 1;
 }
 
 void GPS_flash_read(void)
