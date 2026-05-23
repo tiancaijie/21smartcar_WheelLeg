@@ -148,31 +148,31 @@ void Hand_PotRecord(void)
 /*==================== 函数定义 ====================*/
 /*
  * Function:    INS_Calcu
- * Description: 惯导信息计算
- * input:       无
- * output:      无
+ * Description: �?导信�?计算
+ * input:       �?
+ * output:      �?
  */
 void INS_Calcu(void)
 {
 //    double a,b;0.927500  0.923599 0.923050 0.927211
-    static char ms100 = 0;
+    static char ms20 = 0;
 
-    ms100++;   
-    // 编码器读值转换位米
-    INSData.Position += ((double)motor_value.receive_left_speed_data - (double)motor_value.receive_right_speed_data) * 0.000001 *4 / 1.1041067;
+    ms20++;   
+    // 编码器�?�值转�?位米
+    INSData.Position += ((double)motor_value.receive_left_speed_data - (double)motor_value.receive_right_speed_data) * 0.000001 / 0.5239245 * 3;
 
     //INSData.Position2 = (INSData.Position + 19 * INSData.Position_last) / 20 ;
-    if(ms100 == 49)
+    if(ms20 == 19)
     {
 
-        INSData.v_y = INSData.Position * (cos(IMUData.sum_yaw_mahony*PI/180));// 前方是y轴
-        INSData.v_x = INSData.Position * (sin(IMUData.sum_yaw_mahony*PI/180));// 右边是x轴
+        INSData.v_y = INSData.Position * (cos(IMUData.sum_yaw_mahony*PI/180));// 前方是y�?
+        INSData.v_x = INSData.Position * (sin(IMUData.sum_yaw_mahony*PI/180));// 右边是x�?
         INSData.Position_x += INSData.v_x;
         INSData.Position_y += INSData.v_y;
-        // 惯导计数归零
+        // �?导�?�数归零
 //        INSData.Position_last = INSData.Position ;
         INSData.Position = 0;
-        ms100 = 0;
+        ms20 = 0;
     }
 
 }
