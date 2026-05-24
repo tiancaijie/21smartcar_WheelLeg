@@ -78,11 +78,11 @@ int JumpOff = 0;
 // int Jump_Finish_Flag = 1;        //遥控跳跃
 int Jump_Finish_Flag = 0;           //只跳一次
 int Jump_Finish_Flag1 = 0;
-uint16 Extend_time = 80;
+uint16 Extend_time = 100;
 uint16 Shrink_time = 200;
 uint16 Cushion_time = 240;
 uint16 Over_time = 350;//320;
-float Extend_Height = 2600;
+float Extend_Height = 2800;
 float Shrink_Height = 0.075;
 float Cushion_Height = 1000;
 float Cushion_Speed  = 1000;
@@ -249,24 +249,24 @@ float Speed_Compensation = 0;
 void Speed_Set(void)
 {
     // //速度1.0 减速
-    if(Distance < 0.3 && fabsf(hCtrl.Pitch.ExpectSpeed_Act) > 550)
-    {
-        hCtrl.Pitch.ExpectSpeed_Act = 0;
-        Now_Dot_Flag++;
-    }
-    else if(Distance < 0.2)
-    {
-        hCtrl.Pitch.ExpectSpeed_Act = 0;
-        Now_Dot_Flag++;
-    }
-    else if(Distance < 2.0 && fabsf(hCtrl.Pitch.ExpectSpeed_Act) > 550)
-    {
-        hCtrl.Pitch.ExpectSpeed_Act =  Distance / 2 * hCtrl.Pitch.ExpectSpeed_Exp;
-    }
-    else if(Distance < 1.0)
-    {
-        hCtrl.Pitch.ExpectSpeed_Act =  Distance * hCtrl.Pitch.ExpectSpeed_Exp;
-    }
+    // if(Distance < 0.3 && fabsf(hCtrl.Pitch.ExpectSpeed_Act) > 550)
+    // {
+    //     hCtrl.Pitch.ExpectSpeed_Act = 0;
+    //     Now_Dot_Flag++;
+    // }
+    // else if(Distance < 0.2)
+    // {
+    //     hCtrl.Pitch.ExpectSpeed_Act = 0;
+    //     Now_Dot_Flag++;
+    // }
+    // else if(Distance < 2.0 && fabsf(hCtrl.Pitch.ExpectSpeed_Act) > 550)
+    // {
+    //     hCtrl.Pitch.ExpectSpeed_Act =  Distance / 2 * hCtrl.Pitch.ExpectSpeed_Exp;
+    // }
+    // else if(Distance < 1.0)
+    // {
+    //     hCtrl.Pitch.ExpectSpeed_Act =  Distance * hCtrl.Pitch.ExpectSpeed_Exp;
+    // }
 
     //速度2.0 加反转补偿
     // if(Distance < 0.2 && fabsf(hCtrl.Pitch.ExpectSpeed_Act) > 550)
@@ -303,35 +303,48 @@ void Speed_Set(void)
     // }
 
     //调试连续走，不停
-        // if(Distance < 0.5 && fabsf(hCtrl.Pitch.ExpectSpeed_Act) > 550)
-        // {
-        //     if (Run_SET[1] == 2)
-        //     {
-        //         hCtrl.Pitch.ExpectSpeed_Act = 0;
-        //     }
-        //     else
-        //     {
-        //         hCtrl.Pitch.ExpectSpeed_Act = hCtrl.Pitch.ExpectSpeed_Exp / 2;
-        //     }
-        //     Now_Dot_Flag++;
-        // }
+        if(Distance < 0.3)
+        {
+            // if (Run_SET[1] == 2)
+            // {
+            //     hCtrl.Pitch.ExpectSpeed_Act = 0;
+            // }
+            // else
+            // {
+            //     hCtrl.Pitch.ExpectSpeed_Act = hCtrl.Pitch.ExpectSpeed_Exp / 2;
+            // }
+            if (Run_SET[1] == 2)
+            {
+                hCtrl.Pitch.ExpectSpeed_Act = 0;
+            }
+            else 
+            {
+                hCtrl.Pitch.ExpectSpeed_Act = hCtrl.Pitch.ExpectSpeed_Exp;
+            }
+            Now_Dot_Flag++;
+        }
     // else if(Distance < 1.0)
     // {
     //     hCtrl.Pitch.ExpectSpeed_Act = hCtrl.Pitch.ExpectSpeed_Exp / 2;
     //     //Now_Dot_Flag++;
     // }
-        // else if(Distance < 0.5)
-        // {
-        //     if (Run_SET[1] == 2)
-        //     {
-        //         hCtrl.Pitch.ExpectSpeed_Act = 0;
-        //     }
-        //     else
-        //     {
-        //         hCtrl.Pitch.ExpectSpeed_Act = hCtrl.Pitch.ExpectSpeed_Exp / 2;
-        //     }
-        //     Now_Dot_Flag++;
-        // }
+        else 
+        {
+            if (PWM_Output_Flag == 4)
+            {
+                hCtrl.Pitch.ExpectSpeed_Act = 420;
+            }
+            else if (PWM_Output_Flag == 3)
+            {
+                hCtrl.Pitch.ExpectSpeed_Act = 200;
+            }
+            else
+            {
+                hCtrl.Pitch.ExpectSpeed_Act = hCtrl.Pitch.ExpectSpeed_Exp;
+            }
+        
+            // Now_Dot_Flag++;
+        }
     // else if(Distance < 2.0 && fabsf(hCtrl.Pitch.ExpectSpeed_Act) > 550)
     // {
     //     hCtrl.Pitch.ExpectSpeed_Act =  Distance / 2 * hCtrl.Pitch.ExpectSpeed_Exp;
@@ -340,10 +353,10 @@ void Speed_Set(void)
     // {
     //     hCtrl.Pitch.ExpectSpeed_Act =  Distance * hCtrl.Pitch.ExpectSpeed_Exp;
     // }
-    else
-    {
-        hCtrl.Pitch.ExpectSpeed_Act = hCtrl.Pitch.ExpectSpeed_Exp;
-    }
+        // else
+        // {
+        //     hCtrl.Pitch.ExpectSpeed_Act = hCtrl.Pitch.ExpectSpeed_Exp;
+        // }
 
 }
 
@@ -375,6 +388,7 @@ void Element_Play(void)
     }
 }
 
+
 // 目标点间导航与角度计算
 void P_to_P(void)
 {
@@ -384,6 +398,7 @@ void P_to_P(void)
         {
             float dx = (float)(Set_Guidance_X[Now_Dot] - INSData.Position_x);
             float dy = (float)(Set_Guidance_Y[Now_Dot] - INSData.Position_y);
+            float coefficient = (IMUData.sum_yaw_mahony + (180/PI)*atan2(-(Set_Guidance_X[Now_Dot] - INSData.Position_x), Set_Guidance_Y[Now_Dot] - INSData.Position_y)) / fabs(IMUData.sum_yaw_mahony + (180/PI)*atan2(-(Set_Guidance_X[Now_Dot] - INSData.Position_x), Set_Guidance_Y[Now_Dot] - INSData.Position_y));
             Distance = sqrtf(dx * dx + dy * dy);
 
             //Set_Sign  [Now_Dot] = (180/PI)*atan2(Set_X[Now_Dot + 1] - INSData.Position_x, Set_Y[Now_Dot + 1] - INSData.Position_y) > 0 ? 1 : 0;
@@ -394,6 +409,15 @@ void P_to_P(void)
             else
             {
                 Set_Angle [Now_Dot] = ((180/PI)*atan2(-(Set_Guidance_X[Now_Dot] - INSData.Position_x), Set_Guidance_Y[Now_Dot] - INSData.Position_y)) ;
+
+                if (fabs(IMUData.sum_yaw_mahony + Set_Angle [Now_Dot]) > 180)
+                {
+                    Set_Angle [Now_Dot] = -coefficient * 360 + Set_Angle [Now_Dot];
+                }
+                else
+                {
+                    Set_Angle [Now_Dot] = Set_Angle [Now_Dot];
+                }
             }
 
             Angle_Setting();
