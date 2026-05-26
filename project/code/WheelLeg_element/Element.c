@@ -1,7 +1,7 @@
 /*
  * Element.c
  *
- *  Created on: 2025��5��13��
+ *  Created on: 2025�?5�?13�?
  *      Author: Zzio
  */
 #include "zf_common_headfile.h"
@@ -9,38 +9,38 @@
 #include "isr.h"
 #include "control.h"
 
-// 期望航向角
+// 期望�?向�??
 float Expect_Angle = 0;
-// 期望俯仰角
+// 期望�?仰�??
 float Expect_Angle_Pitch = 0;
 // 行走腿偏移量
 float Row_LegOffset[2] = {0};
-// 单步角度
+// 单�?��?�度
 float Single_Angle = 10;
-// 当前目标点编号
+// 当前�?标点编号
 uint8 Now_Dot = 1;
-// 总目标点数
+// 总目标点�?
 uint32 All_Dot = 8;
-// 当前目标点状态标志
+// 当前�?标点状态标�?
 uint8 Now_Dot_Flag = 0;
-// 上一次GPS状态
+// 上一�?GPS状�?
 uint8 Last_GPS_State = 0;
-// 状态计数
+// 状态�?�数
 uint8 State_get_count = 0;
-// INS航向对准完成标志
+// INS�?向�?�准完成标志
 uint8 INS_Heading_Align_Done = 0;
-// INS航向对准偏移
+// INS�?向�?�准偏移
 float INS_Heading_Align_Offset = 0;
 // 单桥通过标志
 int Single_Bridge = 0;
-// 桥上升/下降标志
+// 桥上�?/下降标志
 int BridgeUP_Flag = 0,BridgeDOWN_Flag = 0;
 
 uint8 Run_GPS = 0;
 uint8 Run_INS = 1;
-uint8 Spin_State = 0;             // 0: 未开始  1: 旋转中
+uint8 Spin_State = 0;             // 0: �?开�?  1: 旋转�?
 
-// 桥通过计数与状态检测
+// 桥通过计数与状态�?��?
 void Single_BridgeCount(void)
 {
     if (Single_Bridge == 1 && Bridge_Count > 0 && BridgeDOWN_Flag == 0 && BridgeUP_Flag == 0 &&(Stand_Height < 0.06 && (ABS(L_Height - R_Height) >= 0.025) || Stand_Height >= 0.06 && ABS(L_Height - R_Height) >= 0.045))
@@ -67,7 +67,7 @@ float L_Height_Init = 0.028;//0.052;
 float R_Height_Init = 0.028;//0.052;
 float Roll_LStep = 0.00018;
 float Accumulation = 0;
-// 桥通过状态控制（预留）
+// 桥通过状态控制（预留�?
 void Single_BridgeStateCTRL(void)
 {
 
@@ -76,7 +76,7 @@ void Single_BridgeStateCTRL(void)
 int JumpTimeCount = 0;
 int JumpOff = 0;
 // int Jump_Finish_Flag = 1;        //遥控跳跃
-int Jump_Finish_Flag = 0;           //只跳一次
+int Jump_Finish_Flag = 0;           //�?跳一�?
 int Jump_Finish_Flag1 = 0;
 uint16 Extend_time = 100;
 uint16 Shrink_time = 200;
@@ -86,7 +86,7 @@ float Extend_Height = 2800;
 float Shrink_Height = 0.075;
 float Cushion_Height = 1000;
 float Cushion_Speed  = 1000;
-// 跳跃动作控制主函数
+// 跳跃动作控制主函�?
 void JumpCTRL(void)
 {
     JumpTimeCount+=2;
@@ -133,7 +133,7 @@ void JumpCTRL(void)
     }
 }
 
-// 恢复到初始高度
+// 恢�?�到初�?�高�?
 void Recover(void)
 {
     if (L_Height_Init > Height_Init)
@@ -148,7 +148,7 @@ void Recover(void)
     }
 }
 
-// 站立到指定高度
+// 站立到指定高�?
 void Stand(void)
 {
     if (L_Height_Init < Stand_Height)
@@ -191,7 +191,7 @@ void Stand(void)
 //    }
 //}
 
-// 重新设置起点（GPS/INS）
+// 重新设置起点（GPS/INS�?
 void Reset_StartPot(void)
 {
     if(Run_GPS)
@@ -230,7 +230,7 @@ void Reset_StartPot(void)
     }
 }
 
-// 设置当前目标角度
+// 设置当前�?标�?�度
 void Angle_Setting(void)
 {
     // if(Set_Sign[7] == 2)// && ABS(Expect_Angle - IMUData.sum_yaw_mahony) < 0.5)
@@ -248,7 +248,7 @@ float Speed_Compensation = 0;
 // 速度控制设置
 void Speed_Set(void)
 {
-    // //速度1.0 减速
+    // //速度1.0 减�?
     // if(Distance < 0.3 && fabsf(hCtrl.Pitch.ExpectSpeed_Act) > 550)
     // {
     //     hCtrl.Pitch.ExpectSpeed_Act = 0;
@@ -268,7 +268,7 @@ void Speed_Set(void)
     //     hCtrl.Pitch.ExpectSpeed_Act =  Distance * hCtrl.Pitch.ExpectSpeed_Exp;
     // }
 
-    //速度2.0 加反转补偿
+    //速度2.0 加反�?补偿
     // if(Distance < 0.2 && fabsf(hCtrl.Pitch.ExpectSpeed_Act) > 550)
     // {
     //     hCtrl.Pitch.ExpectSpeed_Act = 0;
@@ -389,7 +389,7 @@ void Element_Play(void)
 }
 
 
-// 目标点间导航与角度计算
+// �?标点间�?�航与�?�度计算
 void P_to_P(void)
 {
     if(Run_INS)
@@ -426,7 +426,7 @@ void P_to_P(void)
 
 }
 
-// 主运行流程控制
+// 主运行流程控�?
 void Run_Start(void)
 {
     static uint8 Segment_Run_Enabled = 0;

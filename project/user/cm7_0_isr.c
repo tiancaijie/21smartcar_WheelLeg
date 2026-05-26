@@ -513,39 +513,19 @@ void uart2_isr (void)
     if(Cy_SCB_GetRxInterruptMask(get_scb_module(UART_2)) & CY_SCB_UART_RX_NOT_EMPTY)            // 串口2接收中断
     {
         Cy_SCB_ClearRxInterrupt(get_scb_module(UART_2), CY_SCB_UART_RX_NOT_EMPTY);              // 清除接收中断标志位
-        
-       
-        gnss_uart_callback();
-        gnss_data_parse();                              //定位模块数据解析
 
-//        gnss_dot[0][10] = 0;
-//        gnss_dot[1][10] = 0;
-//        for(int i = 9; i>=1; i--)
+        
+        tof050f_rx_callback();                                                           // 使用 GPS 串口接收 TOF050F 数据
+
+//        gnss_uart_callback();
+//        gnss_data_parse();                              //定位模块数据解析
+//        gps_state = 1 - gps_state;
+//        if(Run_GPS)
 //        {
-//            gnss_dot[0][10]+=gnss_dot[0][i - 1];
-//            gnss_dot[1][10]+=gnss_dot[1][i - 1];
-//            gnss_dot[0][i] = gnss_dot[0][i - 1];
-//            gnss_dot[1][i] = gnss_dot[1][i - 1];
+//            Distance = get_two_points_distance(Start_Latitude, Start_Longitude, gnss.latitude, gnss.longitude) + INSData.Distance;        //偏离起点距离
+//            Azimuth  = get_two_points_azimuth(Start_Latitude, Start_Longitude, gnss_dot[0][10], gnss_dot[1][10]);         //偏离起点角度 
+//            CarDirection = gnss.direction;
 //        }
-//        gnss_dot[0][0]=gnss.latitude;
-//        gnss_dot[1][0]=gnss.longitude;
-//        gnss_dot[0][10] = gnss_dot[0][10] / 9;
-//        gnss_dot[1][10] = gnss_dot[1][10] / 9;
-        gps_state = 1 - gps_state;
-//
-//        Distance = get_two_points_distance(Start_Latitude, Start_Longitude, gnss.latitude, gnss.longitude) + INSData.Distance;        //偏离起点距离
-//        Azimuth  = get_two_points_azimuth(Start_Latitude, Start_Longitude, gnss_dot[0][10], gnss_dot[1][10]);         //偏离起点角度 
-//        CarDirection = gnss.direction;
-        
-        
-        if(Run_GPS)
-        {
-            Distance = get_two_points_distance(Start_Latitude, Start_Longitude, gnss.latitude, gnss.longitude) + INSData.Distance;        //偏离起点距离
-            Azimuth  = get_two_points_azimuth(Start_Latitude, Start_Longitude, gnss_dot[0][10], gnss_dot[1][10]);         //偏离起点角度 
-            CarDirection = gnss.direction;
-        }
-        
-        
     }
     else if(Cy_SCB_GetTxInterruptMask(get_scb_module(UART_2)) & CY_SCB_UART_TX_DONE)            // 串口2发送中断
     {

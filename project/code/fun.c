@@ -4,8 +4,8 @@
 #include "MahonyAHRS.h"
 int giWheelSpeed_Old = 0,giLeftWheelSpeed_old = 0,giRightWheelSpeed_old = 0;
 int giWheelSpeed = 0,giRightWheelSpeed = 0,giLeftWheelSpeed = 0, SpeedMax, SpeedMid, SpeedMin;
-int SP_RightFiltering[2] = {0};             //鍘嗗彶锟�?
-int SP_LeftFiltering[2] = {0};              //鍘嗗彶锟�?
+int SP_RightFiltering[2] = {0};             //鍘嗗彶锟�??
+int SP_LeftFiltering[2] = {0};              //鍘嗗彶锟�??
 int Change[2];
 int SpeedHill, SpeedCircle;
 typedef union//锟斤拷锟斤拷锟斤拷转锟斤拷锟斤拷锟酵癸拷锟斤拷锟斤拷
@@ -14,7 +14,7 @@ typedef union//锟斤拷锟斤拷锟斤拷转锟斤拷锟斤拷锟酵癸拷锟�
   unsigned long ldata;
 }FloatLongType;
 
-void Float_to_Byte(float f,unsigned char byte[])//锟斤拷锟斤拷锟斤拷转4锟街斤拷
+void Float_to_Byte(float f,unsigned char byte[])//锟斤拷锟斤拷锟斤拷转4锟�?�斤�?
 {
     FloatLongType fl;
     fl.fdata=f;
@@ -104,7 +104,7 @@ void ClearArrayfloat(float *PTemp, float *PEnd)
 
 /**
 ** Function: m_sqrt
-** Description: 姝ｆ暟寮€锟�?
+** Description: 姝ｆ暟�??�?锟�?
 ** Others:锟�?
 **/
 unsigned int m_sqrt(unsigned int x)
@@ -123,7 +123,7 @@ unsigned int m_sqrt(unsigned int x)
 }
 /************************************************
  * Function: Square
- * Description: 姹傛暟锟�?骞虫柟
+ * Description: 姹傛暟锟�??骞虫�?
  * Calls: None
  * Input: arg
  * Return: arg * arg;
@@ -138,8 +138,8 @@ float Square_float(float arg)
 }
 /**
 ** Function: Linear_Interpolation
-** Description: 绾挎€ф彃锟�?
-** Others:*Ptemp锛氭暟缁勭殑璧凤拷?锟芥寚閽堬紝End_Row锛氫竴鍏辫繘琛岋拷?锟藉皯锟�?
+** Description: 绾挎�?ф彃锟�??
+** Others:*Ptemp锛氭暟缁�?殑璧凤拷?锟芥寚閽�?紝End_Row锛氫竴鍏�?繘琛岋拷?锟藉�?锟�?
 **/
 void Linear_Interpolation(int *Ptemp,int End_Row)
 {
@@ -169,7 +169,7 @@ void Linear_Interpolation(int *Ptemp,int End_Row)
 /**
 ** Function: ParameterSent
 ** Description: 锟斤拷位锟斤拷锟斤拷锟斤拷锟斤拷
-** Others:锟斤拷
+** Others:锟斤�?
 **/
 void ParameterSent(void)
 {
@@ -191,13 +191,13 @@ void ParameterSent(void)
     uart_write_byte(UART_2, utmp2);
     uart_write_byte(UART_2, utmp1);
 
-    itmp = (signed int)(dbg[0]);//鏈熸湜閫熷害L
+    itmp = (signed int)(dbg[0]);//鏈熸湜閫熷�?�L
     utmp1 = (itmp) >> 8;
     utmp2 = (itmp) & 0x00ff;
     uart_write_byte(UART_2, utmp2);
     uart_write_byte(UART_2, utmp1);
 
-    itmp = (signed int)(dbg[1]);//鏈熸湜閫熷害R
+    itmp = (signed int)(dbg[1]);//鏈熸湜閫熷�?�R
     utmp1 = (itmp) >> 8;
     utmp2 = (itmp) & 0x00ff;
     uart_write_byte(UART_2, utmp2);
@@ -244,8 +244,8 @@ int uartget = 0;
 
 void VOFA_Receive_callback (uart_index_enum uart_n)
 {
-    uint8 dat;//璁板綍褰撲笅鐨勯」
-    //鎶婂垎鍧楃殑骞挎挱鎶ユ枃璁板綍鍏ユ暟缁勪腑
+    uint8 dat;//璁板綍褰撲笅鐨勯�?
+    //鎶婂垎鍧楃殑骞挎挱鎶ユ枃璁板綍鍏ユ暟缁勪�?
     while(uart_query_byte(uart_n, &dat) && Vofa_Record < 2 )
     {
         Vofa_Get[Vofa_Record] = dat;
@@ -293,7 +293,7 @@ void VOFA_ParameterSent(uart_index_enum uart_n)
     uint8 i = 0;
     uint8 end[4] = {0x00, 0x00, 0x80, 0x7f};
 
-    SendValue[0].floatValue = (float)Element_Flag[Now_Dot];
+    SendValue[0].floatValue = (float)tof050f_distance_mm;
     SendValue[1].floatValue = (float)Expect_Angle;
     SendValue[2].floatValue = (float)-IMUData.sum_yaw_mahony;
     SendValue[3].floatValue = (float)INSData.Position;
@@ -333,19 +333,19 @@ void itoa(int32_t num, char* buffer) {
         n = (uint32_t)num;
     }
 
-    // 鐢熸垚鍙嶅悜瀛楋拷?锟戒覆
+    // 鐢熸垚鍙嶅悜瀛�?�拷?锟戒�?
     do {
         *ptr++ = (n % 10) + '0';
         n /= 10;
     } while (n > 0);
 
-    // 娣诲姞璐熷彿
+    // 娣�?��?�璐熷彿
     if (isNegative) {
         *ptr++ = '-';
     }
-    *ptr = '\0'; // 缁堬拷?锟藉瓧绗︿覆
+    *ptr = '\0'; // 缁堬�??锟藉瓧绗︿�??
 
-    // 鍙嶈浆瀛楋拷?锟戒覆
+    // 鍙嶈浆瀛�?�拷?锟戒�?
     end = ptr - 1;
     ptr = buffer;
     while (ptr < end) {
@@ -389,7 +389,7 @@ void FOC_SendControl(FOCcontrol_Type FOC_Send,int16 Left_SpeedPWM,int16 Right_Sp
             break;
         }
     }
-    data[6] = 0;                                            // 鍜屾牎楠屾竻
+    data[6] = 0;                                            // 鍜屾牎�?�屾�?
     for(int i = 0; i < 6; i ++)
     {
         data[6] += data[i];         // 璁＄畻鏍￠獙锟�?
